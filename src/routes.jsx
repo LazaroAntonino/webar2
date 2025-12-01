@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
+import { Welcome } from "./pages/Welcome";
 import { UseEffectPage } from "./pages/UseEffectPage";
 
 export const router = createBrowserRouter(
@@ -23,6 +24,7 @@ export const router = createBrowserRouter(
         {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
         <Route path= "/" element={<Home />} />
         <Route path= "/useeffectpage" element={<UseEffectPage/>} />
+        <Route path= "/welcome" element={<Welcome/>} /> 
       </Route>
     )
 );

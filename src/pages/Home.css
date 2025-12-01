@@ -80,6 +80,7 @@
 
 /* Texto blink cuando termina */
 .blink {
+    font-size: medium;
     animation: blink 1s infinite;
     color: #f7c948;
     margin-top: 20px;

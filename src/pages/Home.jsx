@@ -69,7 +69,7 @@ export const Home = () => {
 
 		const interval = setInterval(() => {
 			cambiarMensajeAleatorio();
-		}, 1500); // Cambia cada 1.2s (más natural)
+		}, 2000);
 
 		return () => clearInterval(interval);
 
@@ -78,7 +78,7 @@ export const Home = () => {
 	useEffect(() => {
 		if (contador === 100) {
 			setIsCounting(false);
-			const timeout = setTimeout(() => navigate("/useeffectpage"), 3000);
+			const timeout = setTimeout(() => navigate("/welcome"), 3000);
 			return () => clearTimeout(timeout);
 		}
 	}, [contador, navigate]);
@@ -90,23 +90,27 @@ export const Home = () => {
 				<h1 className="home-title">Bienvenido a mi portfolio</h1>
 				<h1 className="mb-5">Antonino Lázaro</h1>
 
-				<div className="progress-bar-container">
-					<div
-						className="progress-bar-fill"
-						style={{ width: `${contador}%` }}
-					></div>
-				</div>
+				{contador !== 100 && contador !== 0 && (
+					<>
+						<div className="progress-bar-container">
+							<div
+								className="progress-bar-fill"
+								style={{ width: `${contador}%` }}
+							></div>
+						</div>
 
-				{contador !== 100 && <p className="contador-text">{contador}%</p>}
+						<p className="contador-text">{contador}%</p>
+					</>
+				)}
 				{isCounting && <p className="loading-text">{mensajeCarga}</p>}
-
 				{!isCounting && contador !== 100 && (
 					<button className="start-button" onClick={handleEmpezarCuenta}>
 						Empezar
 					</button>
 				)}
 
-				{contador === 100 && <h2 className="text-success blink">Carga completada</h2>}
+				{contador === 100 && <h2 className="text-success blink">Carga completada. Redirigiendo...</h2>
+				}
 			</div>
 		</div>
 	);
