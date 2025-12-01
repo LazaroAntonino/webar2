@@ -15,11 +15,47 @@ export const Home = () => {
 
 	useEffect(() => {
 		let interval = null;
-
 		if (isCounting && contador < 100) {
+			let intervalSpeed;
+			switch (true) {
+
+				// Arranca lento (pero no demasiado)
+				case contador < 10:
+					intervalSpeed = 120;
+					break;
+
+				// Primer acelerón fuerte
+				case contador < 25:
+					intervalSpeed = 50;
+					break;
+
+				// Pequeño frenazo para simular carga real
+				case contador < 40:
+					intervalSpeed = 90;
+					break;
+
+				// Zona central rápida
+				case contador < 60:
+					intervalSpeed = 40;
+					break;
+
+				// Ligera desaceleración (se nota visualmente)
+				case contador < 75:
+					intervalSpeed = 70;
+					break;
+
+				// Último empujón rápido
+				case contador < 90:
+					intervalSpeed = 45;
+					break;
+
+				// Final un poco más lento para que se note
+				default:
+					intervalSpeed = 200;
+			}
 			interval = setInterval(() => {
 				setContador((prev) => prev + 1);
-			}, 50);
+			}, intervalSpeed);
 		} else if (contador === 100) {
 			setIsCounting(false);
 
@@ -43,11 +79,11 @@ export const Home = () => {
 				<h2 className="text-success blink">Carga completada</h2>
 			)}
 
-			<p>{contador}%</p>
+			{contador !== 100 && <p>{contador}%</p>}
 
-			<button onClick={handleEmpezarCuenta} disabled={isCounting}>
+			{(!isCounting && contador !== 100) && <button onClick={handleEmpezarCuenta} disabled={isCounting}>
 				{isCounting ? "Cargando..." : "Empezar"}
-			</button>
+			</button>}
 		</div>
 	);
 };
