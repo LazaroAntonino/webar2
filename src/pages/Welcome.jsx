@@ -6,9 +6,10 @@ import { Inicio } from "./Inicio";
 import { Skills } from "./Skills";
 import { SobreMi } from "./SobreMi";
 import { Contacto } from "./Contacto";
+import gunter from "../../gunter.webp"
 
 export const Welcome = () => {
-    const [contenidoSeleccionado, setContenidoSeleccionado] = useState("")
+    const [contenidoSeleccionado, setContenidoSeleccionado] = useState("Inicio")
 
     const seleccionarContenido = (contenido) => {
         switch (contenido) {
@@ -34,7 +35,7 @@ export const Welcome = () => {
             <aside className="sidebar">
                 <div className="profile-box">
                     <img
-                        src="gunterProfile.jpg"
+                        src={gunter}
                         alt="Profile"
                         className="profile-photo"
                     />

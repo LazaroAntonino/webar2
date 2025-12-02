@@ -1,0 +1,108 @@
+/* Wrapper general */
+.inicio-wrapper {
+    padding: 70px;
+    color: #fff;
+    animation: fadeIn 0.6s ease;
+}
+
+/* Títulos */
+.inicio-title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #ffd84d;
+    margin-bottom: 12px;
+}
+
+.inicio-sub {
+    font-size: 1.25rem;
+    color: #ccc;
+    max-width: 650px;
+    margin-bottom: 45px;
+}
+
+/* Cards */
+.inicio-cards {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 50px;
+}
+
+.inicio-card {
+    flex: 1;
+    background: #151515;
+    padding: 5px;
+    padding-top: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 216, 77, 0.25);
+    box-shadow: 0 0 14px rgba(255, 216, 77, 0.12);
+    transition: 0.25s ease;
+    text-align: center;
+}
+
+.inicio-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(255, 216, 77, 0.25);
+}
+
+.inicio-card-icon {
+    font-size: 1.7rem;
+    color: #ffd84d;
+    margin-bottom: 7px;
+}
+
+.inicio-card h3 {
+    color: #ffd84d;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.inicio-card p {
+    color: #ddd;
+    font-size: 0.7rem;
+}
+
+/* Highlight */
+.inicio-highlight {
+    background: rgba(255, 216, 77, 0.12);
+    padding: 20px;
+    border-left: 4px solid #ffd84d;
+    border-radius: 12px;
+    max-width: 750px;
+}
+
+.inicio-highlight h2 {
+    color: #ffd84d;
+    margin-bottom: 12px;
+    font-size: 1.7rem;
+}
+
+.inicio-highlight p {
+    color: #eee;
+    line-height: 1.6;
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+}
+
+.inicio-list {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.inicio-list li {
+    margin-bottom: 6px;
+    color: #ffd84d;
+    font-size: 1.05rem;
+}
+
+/* Animación Fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
