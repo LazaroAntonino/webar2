@@ -5,10 +5,7 @@ import {
     createRoutesFromElements,
     Route,
 } from "react-router-dom";
-import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
-import { Welcome } from "./pages/Welcome";
-import { UseEffectPage } from "./pages/UseEffectPage";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -19,12 +16,6 @@ export const router = createBrowserRouter(
     // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
 
       // Root Route: All navigation will start from here.
-      <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
-
-        {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-        <Route path= "/" element={<Home />} />
-        <Route path= "/useeffectpage" element={<UseEffectPage/>} />
-        <Route path= "/welcome" element={<Welcome/>} /> 
-      </Route>
+        <Route path="/" element={<Home />} errorElement={<h1>Not found!</h1>} />
     )
 );
