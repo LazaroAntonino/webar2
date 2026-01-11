@@ -1,0 +1,129 @@
+.hero-modal {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 20px;
+}
+
+.hero-modal__card {
+  width: min(1100px, 100%);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.hero-modal__header h1 {
+  margin: 8px 0 4px;
+  font-size: 26px;
+  color: #2b241f;
+  letter-spacing: -0.01em;
+}
+
+.hero-modal__header p {
+  margin: 0;
+  color: #6e5c4f;
+  line-height: 1.5;
+}
+
+.hero-modal__badge {
+  display: inline-flex;
+  padding: 6px 10px;
+  background: #f5e8da;
+  border-radius: 999px;
+  color: #8a6b55;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.hero-modal__form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  color: #4e4036;
+  font-size: 14px;
+}
+
+input,
+select {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 12px;
+  background: #fff;
+  font-size: 15px;
+  color: #2f2a26;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #d1bfa7;
+  box-shadow: 0 0 0 3px rgba(209, 191, 167, 0.35);
+}
+
+.hero-modal__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.primary-btn {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #d6b68a, #c6a57c);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.16);
+}
+
+.ghost-link {
+  background: none;
+  border: none;
+  color: #8a6b55;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .form-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .hero-modal__card {
+    padding: 22px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
