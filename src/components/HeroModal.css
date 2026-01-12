@@ -7,33 +7,32 @@
 
 .hero-modal__card {
   width: min(1100px, 100%);
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 28px;
+  background: var(--surface);
+  border: 1px solid rgba(21, 34, 56, 0.08);
+  border-radius: 24px;
   padding: 28px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
 }
 
 .hero-modal__header h1 {
   margin: 8px 0 4px;
   font-size: 26px;
-  color: #2b241f;
+  color: var(--navy);
   letter-spacing: -0.01em;
 }
 
 .hero-modal__header p {
   margin: 0;
-  color: #6e5c4f;
+  color: var(--muted);
   line-height: 1.5;
 }
 
 .hero-modal__badge {
   display: inline-flex;
   padding: 6px 10px;
-  background: #f5e8da;
+  background: rgba(250, 180, 34, 0.18);
   border-radius: 999px;
-  color: #8a6b55;
+  color: var(--navy);
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.02em;
@@ -57,26 +56,26 @@ label {
   flex-direction: column;
   gap: 6px;
   font-weight: 600;
-  color: #4e4036;
+  color: var(--ink);
   font-size: 14px;
 }
 
 input,
 select {
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(21, 34, 56, 0.12);
   padding: 12px;
   background: #fff;
   font-size: 15px;
-  color: #2f2a26;
+  color: var(--ink);
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 input:focus,
 select:focus {
   outline: none;
-  border-color: #d1bfa7;
-  box-shadow: 0 0 0 3px rgba(209, 191, 167, 0.35);
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(28, 46, 81, 0.18);
 }
 
 .hero-modal__actions {
@@ -90,23 +89,23 @@ select:focus {
   padding: 12px 18px;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #d6b68a, #c6a57c);
+  background: var(--navy);
   color: #fff;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .primary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
 }
 
 .ghost-link {
   background: none;
   border: none;
-  color: #8a6b55;
+  color: var(--navy);
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;

@@ -1,9 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-	font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-	color: #2f2621;
-	background: radial-gradient(circle at 20% 20%, #f7efe5 0, #fdf9f4 35%, #fbf6ef 100%);
+	--navy: #1c2e51;
+	--gold: #fab422;
+	--neutral-0: #ffffff;
+	--neutral-1: #f5f6f8;
+	--neutral-2: #e6e8ec;
+	--text-main: #2b2b2b;
+	--text-secondary: #9aa3b2;
+		--navbar-height: 86px;
+	font-family: 'Inter', 'Lato', system-ui, -apple-system, sans-serif;
+	color: var(--text-main);
+	background: var(--neutral-1);
 	min-height: 100vh;
 }
 
@@ -13,10 +21,21 @@
 
 body {
 	margin: 0;
-	background: transparent;
+	background: var(--neutral-1);
 }
 
 a {
 	color: inherit;
 	text-decoration: none;
+}
+
+h1, h2, h3, h4 {
+	font-family: 'Playfair Display', 'Georgia', serif;
+	color: var(--text-main);
+	margin: 0;
+}
+
+p {
+	margin: 0;
+	color: var(--text-secondary);
 }

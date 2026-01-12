@@ -19,6 +19,16 @@
 - El modal hero ahora solo se muestra cuando no hay sección activa; al seleccionar una sección se muestra la tarjeta "Próximamente".
 - Hice clicable el logo/brand del `MainNavbar` para navegar a `/` usando `useNavigate`.
 - Al hacer clic en el brand/nav principal, también se resetea `activeSection` para mostrar el modal inicial.
+- Restyling general: tipografía global en Arial, paleta corporativa (`#1c2e51` navy, `#fab422` gold), fondos claros.
+- Navbar principal y de secciones unificados en estilo minimal; botones con hover en la nueva paleta.
+- Hero modal actualizado a tonos navy/gold; tarjetón "Próximamente" alineado a la nueva línea visual.
+- Logo del navbar cambiado a `LogoParaFondoBlancoaAR2.png` (en `src/img`).
+- Ajuste extra: botones de navbar más minimalistas (sin sombras, fondo transparente) y separación de los dos navbars con una línea fina.
+- Navbars ahora comparten altura fija (`--navbar-height`) y se apilan sin hueco; línea fina de separación mantenida.
+- Navbar secundario ahora es colapsable en móviles (toggle "Secciones" + menú desplegable suave).
+- Rebuild completo de `Home.jsx` a landing premium AR2: hero con overlay azul, buscador flotante, grilla de propiedades destacadas, sección "Por qué elegir", servicios, testimonios, CTA final y footer.
+- Tipografía actualizada a Playfair Display (títulos) + Inter (texto); paleta y espaciados acorde brief de lujo sobrio.
+- `MainNavbar` rediseñado: menú Propiedades/Nosotros/Servicios/Contacto, CTA "Contáctanos", fondo transparente con transición a sólido en scroll.
 
 ## Pendientes / recordatorios
 - Navbar doble debe verse idéntico (homogeneizar MainNavbar y SectionNavbar en estilos/altura/fondo).
