@@ -95,7 +95,7 @@
   color: var(--navy);
   border: none;
   border-radius: 6px;
-  padding: 12px 18px;
+  padding: 8px 18px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -178,11 +178,6 @@
 
   .navbar__mobile {
     display: block;
-  }
-
-  .navbar__cta {
-    padding: 10px 14px;
-    font-size: 14px;
   }
 }
 

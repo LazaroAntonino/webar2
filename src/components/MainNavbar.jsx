@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./MainNavbar.css";
 import logoLight from "../img/LogoParaFondoBlancoaAR2.png";
 import logoDark from "../img/LogoFondoAzulAR2.png";
+import logoSinFondo from "../img/LogoAR2BlancoSinFondoSinFooter.png";
 import { Phone, List } from "phosphor-react";
 import { useNavigate } from "react-router-dom";
 
@@ -37,7 +38,7 @@ export const MainNavbar = ({ onHomeClick }) => {
         {/* LOGO */}
         <button className="navbar__logo-btn" onClick={goHome} aria-label="Inicio">
           <img
-            src={scrolled ? logoDark : logoLight}
+            src={logoSinFondo}
             alt="AR2 Consulting Inmobiliario"
             className="navbar__logo"
           />
@@ -53,9 +54,9 @@ export const MainNavbar = ({ onHomeClick }) => {
 
         {/* ACCIONES */}
         <div className="navbar__actions">
-          <a href="tel:+34600123456" className="navbar__phone">
+          <a href="tel:+34640081599" className="navbar__phone">
             <Phone size={16} weight="bold" />
-            <span>+34 600 123 456</span>
+            <span>+34 640 08 15 99</span>
           </a>
 
           <button

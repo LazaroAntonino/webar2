@@ -100,6 +100,20 @@ export const Home = () => {
                 </span>
                 <span className="label">Piso</span>
               </button>
+
+              <button className="valuation-option">
+                <span className="icon">
+                  {/* SVG LOCAL / TIENDA */}
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 9.5L6 4.5H18L20 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M5 9.5H19V20H5V9.5Z" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M10 13H14V20H10V13Z" fill="currentColor" fillOpacity="0.12" />
+                    <path d="M10 13H14V20H10V13Z" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M8 12C6.895 12 6 11.105 6 10V9.5H18V10C18 11.105 17.105 12 16 12C14.895 12 14 11.105 14 10C14 11.105 13.105 12 12 12C10.895 12 10 11.105 10 10C10 11.105 9.105 12 8 12Z" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                </span>
+                <span className="label">Local</span>
+              </button>
             </div>
 
             {/* TRUST */}
