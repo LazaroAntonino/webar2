@@ -127,14 +127,24 @@ export const Home = () => {
                   <span className="pill pill-light">{item.location}</span>
                 </div>
                 <div className="property-card__body">
-                  <h3>{item.title}</h3>
-                  <p className="price">{item.price}</p>
+                  <div className="property-card__head">
+                    <h3>{item.title}</h3>
+                    <p className="price">{item.price}</p>
+                  </div>
+
+                  <div className="property-meta">
+                    <span className="property-location"><MapPinLine size={16} weight="bold" /> {item.location}</span>
+                    <span className="property-area"><Ruler size={16} /> {item.area}</span>
+                  </div>
+
                   <div className="stats">
-                    <span><Ruler size={18} /> {item.area}</span>
                     <span><Bed size={18} /> {item.beds} hab.</span>
                     <span><Bathtub size={18} /> {item.baths} baños</span>
                   </div>
-                  <button className="ghost-btn nav">Ver propiedad</button>
+
+                  <div className="property-card__footer">
+                    <button className="cta-btn slim">Ver propiedad</button>
+                  </div>
                 </div>
               </article>
             ))}
