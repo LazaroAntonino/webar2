@@ -1,0 +1,21 @@
+# Worklog / Recap
+
+## 2026-01-08
+- Ajusté rutas en `src/routes.jsx` para dejar solo la ruta `/` apuntando a `Home`.
+- Simplifiqué `Home.jsx` a un placeholder inicial (Hello World) para partir desde cero.
+
+## 2026-01-11
+- Diseñé la estructura inicial de la web inmobiliaria premium en `Home.jsx` con doble navbar, modal hero y secciones con switch.
+- Componentes creados (cada uno con su CSS):
+  - `MainNavbar` / `MainNavbar.css`: navbar principal con logo, ubicaciones y ajustes (iconos `phosphor-react`).
+  - `SectionNavbar` / `SectionNavbar.css`: tabs de secciones (Descubrir, Comprar, Vender, Alquilar, Premium) con estado activo.
+  - `HeroModal` / `HeroModal.css`: modal/formulario visual de búsqueda (UI estática).
+  - `ListingSection` / `ListingSection.css`: panel de contenido contextual según la sección activa.
+- Estilos globales en `index.css` (fuente Inter, fondo crema degradado) y layout base en `Home.css`.
+- Instalé `phosphor-react` y verifiqué `npm run build` (ok).
+
+## Pendientes / recordatorios
+- Navbar doble debe verse idéntico (homogeneizar MainNavbar y SectionNavbar en estilos/altura/fondo).
+- Modal hero solo visible cuando no hay sección seleccionada.
+- Añadir lógica real de filtros/búsqueda cuando se defina.
+- Revisar vulnerabilidades de `npm audit` cuando sea oportuno.
