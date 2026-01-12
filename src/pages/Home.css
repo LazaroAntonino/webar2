@@ -13,3 +13,34 @@
 	gap: 16px;
 	padding-bottom: 40px;
 }
+
+.coming-soon-card {
+	margin: 0 auto;
+	width: min(900px, 90%);
+	background: rgba(255, 255, 255, 0.82);
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	border-radius: 20px;
+	padding: 24px;
+	box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+}
+
+.coming-soon-card h2 {
+	margin: 6px 0 8px;
+	color: #2f2621;
+}
+
+.coming-soon-card .muted {
+	color: #746356;
+	line-height: 1.5;
+}
+
+.pill {
+	display: inline-flex;
+	padding: 6px 10px;
+	border-radius: 999px;
+	background: #f3e4d2;
+	color: #826a56;
+	font-weight: 700;
+	font-size: 12px;
+	letter-spacing: 0.01em;
+}

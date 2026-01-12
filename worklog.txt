@@ -14,6 +14,12 @@
 - Estilos globales en `index.css` (fuente Inter, fondo crema degradado) y layout base en `Home.css`.
 - Instalé `phosphor-react` y verifiqué `npm run build` (ok).
 
+## 2026-01-12
+- Eliminé toda referencia a `ListingSection` (componente borrado) y añadí un placeholder sencillo para secciones seleccionadas.
+- El modal hero ahora solo se muestra cuando no hay sección activa; al seleccionar una sección se muestra la tarjeta "Próximamente".
+- Hice clicable el logo/brand del `MainNavbar` para navegar a `/` usando `useNavigate`.
+- Al hacer clic en el brand/nav principal, también se resetea `activeSection` para mostrar el modal inicial.
+
 ## Pendientes / recordatorios
 - Navbar doble debe verse idéntico (homogeneizar MainNavbar y SectionNavbar en estilos/altura/fondo).
 - Modal hero solo visible cuando no hay sección seleccionada.

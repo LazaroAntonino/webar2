@@ -19,6 +19,23 @@
   gap: 12px;
 }
 
+.brand-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.brand-button:focus-visible {
+  outline: 2px solid #d6b68a;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
 .main-navbar__logo {
   height: 42px;
   width: 42px;
