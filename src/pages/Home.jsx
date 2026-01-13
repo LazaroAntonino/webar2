@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Home.css";
 import { MainNavbar } from "../components/MainNavbar";
-import { MapPinLine, House, ShieldCheck, Sparkle, Bed, Bathtub, Ruler, Star } from "phosphor-react";
+import { ValuationModal } from "../components/ValuationModal";
+
+import {
+  MapPinLine,
+  House,
+  ShieldCheck,
+  Sparkle,
+  Bed,
+  Bathtub,
+  Ruler,
+  Star,
+} from "phosphor-react";
+
+/* ================= DATA ================= */
 
 const featured = [
   {
@@ -37,30 +50,50 @@ const featured = [
 ];
 
 const reasons = [
-  { icon: ShieldCheck, title: "Asesoría experta", desc: "Equipo senior con operaciones premium en capitales y costa." },
-  { icon: Sparkle, title: "Marketing selectivo", desc: "Foto y video editorial, audiencias cualificadas, privacidad total." },
-  { icon: House, title: "Cierres sin fricción", desc: "Due diligence completa, negociación y acompañamiento legal." },
+  {
+    icon: ShieldCheck,
+    title: "Asesoría experta",
+    desc: "Equipo senior con operaciones premium en capitales y costa.",
+  },
+  {
+    icon: Sparkle,
+    title: "Marketing selectivo",
+    desc: "Foto y video editorial, audiencias cualificadas, privacidad total.",
+  },
+  {
+    icon: House,
+    title: "Cierres sin fricción",
+    desc: "Due diligence completa, negociación y acompañamiento legal.",
+  },
 ];
 
 const testimonials = [
   {
     name: "María G.",
     source: "Compradora en Madrid",
-    quote: "AR2 convirtió la compra en un proceso claro y rápido. Transparencia total y visitas muy seleccionadas.",
+    quote:
+      "AR2 convirtió la compra en un proceso claro y rápido. Transparencia total y visitas muy seleccionadas.",
   },
   {
     name: "Jordi R.",
     source: "Vendedor en Barcelona",
-    quote: "Vendimos en 30 días con reportes semanales y un pricing realista. Comunicación impecable.",
+    quote:
+      "Vendimos en 30 días con reportes semanales y un pricing realista. Comunicación impecable.",
   },
 ];
 
+/* ================= COMPONENT ================= */
+
 export const Home = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [tipoSeleccionado, setTipoSeleccionado] = useState("");
+
   return (
     <div className="home-shell">
       <MainNavbar onHomeClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
 
       <main>
+        {/* ================= HERO VALORACIÓN ================= */}
         <section className="hero hero--valuation" id="inicio">
           <div className="hero__overlay"></div>
 
@@ -80,36 +113,72 @@ export const Home = () => {
 
             {/* OPCIONES */}
             <div className="valuation-options valuation-options--center">
-              <button className="valuation-option">
+              <button
+                className="valuation-option"
+                onClick={() => {
+                  setTipoSeleccionado("casa");
+                  setModalOpen(true);
+                }}
+              >
                 <span className="icon">
-                  {/* SVG CASA */}
                   <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M3 10.5L12 3L21 10.5V21H3V10.5Z" stroke="currentColor" strokeWidth="1.5" />
+                    <path
+                      d="M3 10.5L12 3L21 10.5V21H3V10.5Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
                   </svg>
                 </span>
                 <span className="label">Casa</span>
               </button>
 
-              <button className="valuation-option">
+              <button
+                className="valuation-option"
+                onClick={() => {
+                  setTipoSeleccionado("piso");
+                  setModalOpen(true);
+                }}
+              >
                 <span className="icon">
-                  {/* SVG PISO */}
                   <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M9 21V15H15V21" stroke="currentColor" strokeWidth="1.5" />
+                    <rect
+                      x="4"
+                      y="3"
+                      width="16"
+                      height="18"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M9 21V15H15V21"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
                   </svg>
                 </span>
                 <span className="label">Piso</span>
               </button>
 
-              <button className="valuation-option">
+              <button
+                className="valuation-option"
+                onClick={() => {
+                  setTipoSeleccionado("local");
+                  setModalOpen(true);
+                }}
+              >
                 <span className="icon">
-                  {/* SVG LOCAL / TIENDA */}
                   <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M4 9.5L6 4.5H18L20 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                    <path d="M5 9.5H19V20H5V9.5Z" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M10 13H14V20H10V13Z" fill="currentColor" fillOpacity="0.12" />
-                    <path d="M10 13H14V20H10V13Z" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M8 12C6.895 12 6 11.105 6 10V9.5H18V10C18 11.105 17.105 12 16 12C14.895 12 14 11.105 14 10C14 11.105 13.105 12 12 12C10.895 12 10 11.105 10 10C10 11.105 9.105 12 8 12Z" stroke="currentColor" strokeWidth="1.5" />
+                    <path
+                      d="M4 9.5L6 4.5H18L20 9.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M5 9.5H19V20H5V9.5Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
                   </svg>
                 </span>
                 <span className="label">Local</span>
@@ -125,57 +194,58 @@ export const Home = () => {
           </div>
         </section>
 
-
-
-        {/* DESTACADAS */}
+        {/* ================= PROPIEDADES ================= */}
         <section className="section" id="propiedades">
           <div className="section__header container">
             <p className="eyebrow navy">Propiedades destacadas</p>
             <h2>Seleccionadas para ti</h2>
-            <p className="section__subtitle">Curamos inmuebles con potencial y cierre ágil.</p>
+            <p className="section__subtitle">
+              Curamos inmuebles con potencial y cierre ágil.
+            </p>
           </div>
+
           <div className="properties-grid container">
             {featured.map((item) => (
               <article className="property-card" key={item.title}>
-                <div className="property-card__image" style={{ backgroundImage: `url(${item.image})` }}>
+                <div
+                  className="property-card__image"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                >
                   <span className="pill pill-light">{item.location}</span>
                 </div>
-                <div className="property-card__body">
-                  <div className="property-card__head">
-                    <h3>{item.title}</h3>
-                    <p className="price">{item.price}</p>
-                  </div>
 
-                  <div className="property-meta">
-                    <span className="property-location"><MapPinLine size={16} weight="bold" /> {item.location}</span>
-                    <span className="property-area"><Ruler size={16} /> {item.area}</span>
-                  </div>
+                <div className="property-card__body">
+                  <h3>{item.title}</h3>
+                  <p className="price">{item.price}</p>
 
                   <div className="stats">
                     <span><Bed size={18} /> {item.beds} hab.</span>
                     <span><Bathtub size={18} /> {item.baths} baños</span>
+                    <span><Ruler size={18} /> {item.area}</span>
                   </div>
 
-                  <div className="property-card__footer">
-                    <button className="cta-btn slim">Ver propiedad</button>
-                  </div>
+                  <button className="cta-btn slim">
+                    Ver propiedad
+                  </button>
                 </div>
               </article>
             ))}
           </div>
         </section>
 
-        {/* POR QUÉ */}
+        {/* ================= POR QUÉ ================= */}
         <section className="section section--blue" id="nosotros">
           <div className="section__header container">
             <p className="eyebrow gold">Por qué elegir AR2</p>
             <h2 className="light">Confianza, método y resultados</h2>
-            <p className="section__subtitle light">Operamos con rigor, marketing selectivo y acompañamiento integral.</p>
           </div>
+
           <div className="reasons-grid container">
             {reasons.map((r) => (
               <div className="reason-card" key={r.title}>
-                <div className="reason-icon"><r.icon size={28} weight="bold" /></div>
+                <div className="reason-icon">
+                  <r.icon size={26} weight="bold" />
+                </div>
                 <h3>{r.title}</h3>
                 <p>{r.desc}</p>
               </div>
@@ -183,27 +253,13 @@ export const Home = () => {
           </div>
         </section>
 
-        {/* SERVICIOS / CTA intermedia */}
-        <section className="section services" id="servicios">
-          <div className="container services__content">
-            <div>
-              <p className="eyebrow navy">Servicios a medida</p>
-              <h2>Compra, venta o alquiler con un partner único</h2>
-              <p className="section__subtitle">Valoración realista, home staging, marketing premium, negociación y cierre legal.</p>
-            </div>
-            <div className="services__cta">
-              <button className="cta-btn">Agenda una llamada</button>
-              <p className="muted">Respuesta en menos de 24h.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* TESTIMONIOS */}
+        {/* ================= TESTIMONIOS ================= */}
         <section className="section" id="testimonios">
           <div className="section__header container">
             <p className="eyebrow navy">Testimonios</p>
             <h2>La experiencia de nuestros clientes</h2>
           </div>
+
           <div className="testimonials-grid container">
             {testimonials.map((t) => (
               <div className="testimonial-card" key={t.name}>
@@ -213,13 +269,15 @@ export const Home = () => {
                   ))}
                 </div>
                 <p className="quote">“{t.quote}”</p>
-                <p className="author">{t.name} · {t.source}</p>
+                <p className="author">
+                  {t.name} · {t.source}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* CTA FINAL */}
+        {/* ================= CTA FINAL ================= */}
         <section className="cta-final" id="contacto">
           <div className="cta-final__overlay"></div>
           <div className="cta-final__content container">
@@ -228,27 +286,14 @@ export const Home = () => {
             <button className="cta-btn">Contáctanos ahora</button>
           </div>
         </section>
-
-        {/* FOOTER */}
-        <footer className="footer">
-          <div className="container footer__grid">
-            <div>
-              <h3 className="light">AR2 Consulting Inmobiliario</h3>
-              <p>Operamos en Madrid, Barcelona, Valencia y destinos prime.</p>
-            </div>
-            <div className="footer__col">
-              <p className="footer__title">Contacto</p>
-              <p>+34 123 456 789</p>
-              <p>info@ar2consulting.com</p>
-            </div>
-            <div className="footer__col">
-              <p className="footer__title">Legal</p>
-              <p>Privacidad</p>
-              <p>Aviso legal</p>
-            </div>
-          </div>
-        </footer>
       </main>
+
+      {/* ================= MODAL ================= */}
+      <ValuationModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        tipoInicial={tipoSeleccionado}
+      />
     </div>
   );
 };
