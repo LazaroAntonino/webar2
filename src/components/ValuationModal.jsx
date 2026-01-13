@@ -27,6 +27,20 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         }
     }, [open, tipoInicial]);
 
+    useEffect(() => {
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        // Limpieza por si el componente se desmonta
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [open]);
+
+
     if (!open) return null;
 
     const nextStep = () => setStep(s => Math.min(s + 1, 5));

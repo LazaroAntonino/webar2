@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./MainNavbar.css";
-import logoLight from "../img/LogoParaFondoBlancoaAR2.png";
-import logoDark from "../img/LogoFondoAzulAR2.png";
 import logoSinFondo from "../img/LogoAR2BlancoSinFondoSinFooter.png";
 import { Phone, List } from "phosphor-react";
 import { useNavigate } from "react-router-dom";
