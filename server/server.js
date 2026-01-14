@@ -1,0 +1,158 @@
+// server/server.js
+
+const express = require('express');
+const { google } = require('googleapis');
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
+const cors = require('cors');
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(express.json());
+app.use(cors());
+
+// --- Configuración de Autenticación con Google Calendar ---
+const serviceAccountKeyPath = path.join(__dirname, process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE || 'service-account.json');
+
+let serviceAccountKey;
+try {
+serviceAccountKey = JSON.parse(fs.readFileSync(serviceAccountKeyPath, 'utf8'));
+console.log('✅ Archivo service-account.json cargado correctamente.');
+console.log('DEBUG: client_email:', serviceAccountKey.client_email);
+console.log('DEBUG: private_key length:', serviceAccountKey.private_key ? serviceAccountKey.private_key.length : 0);
+} catch (error) {
+console.error('❌ ERROR: No se pudo leer o parsear el archivo JSON de la cuenta de servicio.');
+console.error(`Asegúrate de que el archivo existe en: ${serviceAccountKeyPath}`);
+console.error('Y que el nombre en tu .env es correcto para GOOGLE_SERVICE_ACCOUNT_KEY_FILE.');
+console.error('Detalles del error:', error.message);
+process.exit(1);
+}
+
+// --- CAMBIO AQUÍ: Inicializar jwtClient con 'credentials' ---
+const jwtClient = new google.auth.JWT({
+email: serviceAccountKey.client_email,
+key: serviceAccountKey.private_key,
+scopes: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events'],
+});
+// --- FIN CAMBIO ---
+
+const calendar = google.calendar({
+version: 'v3',
+auth: jwtClient,
+});
+
+// --- ¡¡¡DEFINICIÓN DE TUS ENDPOINTS!!! ---
+
+app.post('/api/check-availability', async (req, res) => {
+try {
+    const { startDate, endDate, calendarId } = req.body;
+    const targetCalendarId = calendarId || process.env.GOOGLE_CALENDAR_ID;
+
+    if (!startDate || !endDate || !targetCalendarId) {
+        return res.status(400).json({ error: 'Faltan parámetros: startDate, endDate o calendarId.' });
+    }
+
+    await jwtClient.authorize();
+    console.log('✅ jwtClient autorizado para check-availability.');
+
+    const response = await calendar.freebusy.query({
+        resource: {
+            timeMin: new Date(startDate).toISOString(),
+            timeMax: new Date(endDate).toISOString(),
+            items: [{ id: targetCalendarId }],
+        },
+    });
+
+    const busyTimes = response.data.calendars[targetCalendarId].busy || [];
+    res.json({ busyTimes });
+
+} catch (error) {
+    console.error('❌ Error al verificar disponibilidad:', error.message);
+    // --- ¡AÑADIR ESTE LOG PARA EL ERROR COMPLETO! ---
+    console.error('DEBUG: Objeto de error completo:', error);
+    // --- FIN LOG ---
+    if (error.code === 403) {
+         console.error('Posible error de permisos de la cuenta de servicio en Google Cloud o Calendar compartido.');
+    }
+    res.status(500).json({ error: 'Fallo al verificar disponibilidad', details: error.message });
+}
+});
+
+app.post('/api/create-appointment', async (req, res) => {
+try {
+    const { email, selectedDateTime, duration, ...otherFormData } = req.body;
+    const targetCalendarId = process.env.GOOGLE_CALENDAR_ID;
+
+    if (!email || !selectedDateTime || !duration || !targetCalendarId) {
+        return res.status(400).json({ error: 'Faltan campos requeridos: email, selectedDateTime, duration o GOOGLE_CALENDAR_ID.' });
+    }
+
+    const startTime = new Date(selectedDateTime);
+    const endTime = new Date(startTime.getTime() + parseInt(duration) * 60 * 1000);
+
+    const event = {
+        summary: `Cita Valoración ${otherFormData.tipo || 'Inmueble'} - CP ${otherFormData.cp || 'N/A'} - ${email}`,
+        location: otherFormData.cp ? `Código Postal: ${otherFormData.cp}` : 'Ubicación no especificada',
+        description: `📋 DATOS DEL CLIENTE\n` +
+                     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                     `📧 Email: ${email}\n` +
+                     `📞 Teléfono: ${otherFormData.telefono || 'N/A'}\n\n` +
+                     `🏠 DATOS DEL INMUEBLE\n` +
+                     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                     `🏷️ Tipo: ${otherFormData.tipo || 'N/A'}\n` +
+                     `📍 Código Postal: ${otherFormData.cp || 'N/A'}\n` +
+                     `🔑 Operación: ${otherFormData.operacion || 'N/A'}\n` +
+                     `📐 Superficie: ${otherFormData.metros || 'N/A'} m²\n` +
+                     `🛏️ Habitaciones: ${otherFormData.habitaciones || 'N/A'}\n` +
+                     `🚿 Baños: ${otherFormData.banos || 'N/A'}\n`,
+        start: {
+            dateTime: startTime.toISOString(),
+            timeZone: process.env.APP_TIMEZONE || 'Europe/Madrid',
+        },
+        end: {
+            dateTime: endTime.toISOString(),
+            timeZone: process.env.APP_TIMEZONE || 'Europe/Madrid',
+        },
+        // NOTA: No se incluyen 'attendees' porque las cuentas de servicio
+        // no pueden enviar invitaciones sin Domain-Wide Delegation (solo disponible en Google Workspace).
+        // El email del cliente se guarda en la descripción del evento.
+        reminders: {
+            useDefault: false,
+            overrides: [
+                { method: 'popup', minutes: 15 },
+            ],
+        },
+    };
+
+    await jwtClient.authorize();
+    console.log('✅ jwtClient autorizado para create-appointment.');
+
+    const response = await calendar.events.insert({
+        calendarId: targetCalendarId,
+        resource: event,
+    });
+
+    res.status(201).json({
+        message: 'Cita creada con éxito',
+        eventId: response.data.id,
+        eventLink: response.data.htmlLink,
+        googleMeetLink: response.data.hangoutLink,
+    });
+
+} catch (error) {
+    console.error('❌ Error al crear la cita:', error.message);
+    // --- ¡AÑADIR ESTE LOG PARA EL ERROR COMPLETO! ---
+    console.error('DEBUG: Objeto de error completo:', error);
+    // --- FIN LOG ---
+    if (error.code === 403) {
+         console.error('Posible error de permisos de la cuenta de servicio en Google Cloud o Calendar compartido.');
+    }
+    res.status(500).json({ error: 'Fallo al crear la cita', details: error.message });
+}
+});
+
+app.listen(PORT, () => {
+console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+});

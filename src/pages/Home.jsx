@@ -122,10 +122,34 @@ export const Home = () => {
               >
                 <span className="icon">
                   <svg viewBox="0 0 24 24" fill="none">
+                    {/* Casa: tejado triangular + chimenea + puerta */}
                     <path
-                      d="M3 10.5L12 3L21 10.5V21H3V10.5Z"
+                      d="M3 11L12 4L21 11"
                       stroke="currentColor"
                       strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M5 9.5V20H19V9.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M10 20V14H14V20"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16 6V4H18V8"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </span>
@@ -141,19 +165,29 @@ export const Home = () => {
               >
                 <span className="icon">
                   <svg viewBox="0 0 24 24" fill="none">
+                    {/* Piso: edificio con ventanas múltiples */}
                     <rect
                       x="4"
                       y="3"
                       width="16"
                       height="18"
-                      rx="2"
+                      rx="1"
                       stroke="currentColor"
                       strokeWidth="1.5"
                     />
+                    {/* Ventanas fila 1 */}
+                    <rect x="7" y="6" width="3" height="2.5" rx="0.5" stroke="currentColor" strokeWidth="1.2" />
+                    <rect x="14" y="6" width="3" height="2.5" rx="0.5" stroke="currentColor" strokeWidth="1.2" />
+                    {/* Ventanas fila 2 */}
+                    <rect x="7" y="11" width="3" height="2.5" rx="0.5" stroke="currentColor" strokeWidth="1.2" />
+                    <rect x="14" y="11" width="3" height="2.5" rx="0.5" stroke="currentColor" strokeWidth="1.2" />
+                    {/* Puerta entrada */}
                     <path
-                      d="M9 21V15H15V21"
+                      d="M10 21V17H14V21"
                       stroke="currentColor"
                       strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </span>
@@ -169,16 +203,54 @@ export const Home = () => {
               >
                 <span className="icon">
                   <svg viewBox="0 0 24 24" fill="none">
+                    {/* Local: toldo + escaparate */}
+                    {/* Toldo */}
                     <path
-                      d="M4 9.5L6 4.5H18L20 9.5"
+                      d="M3 7L4.5 4H19.5L21 7"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M3 7C3 8.5 4 9.5 5.5 9.5C7 9.5 8 8.5 8 7"
                       stroke="currentColor"
                       strokeWidth="1.5"
                     />
                     <path
-                      d="M5 9.5H19V20H5V9.5Z"
+                      d="M8 7C8 8.5 9 9.5 10.5 9.5C12 9.5 13 8.5 13 7"
                       stroke="currentColor"
                       strokeWidth="1.5"
                     />
+                    <path
+                      d="M13 7C13 8.5 14 9.5 15.5 9.5C17 9.5 18 8.5 18 7"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M18 7C18 8.5 19 9.5 20.5 9.5C22 9.5 21 7 21 7"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    {/* Estructura */}
+                    <path
+                      d="M4 9V20H20V9"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {/* Escaparate */}
+                    <rect x="6" y="12" width="5" height="5" rx="0.5" stroke="currentColor" strokeWidth="1.3" />
+                    {/* Puerta */}
+                    <path
+                      d="M14 20V13H18V20"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="15.5" cy="16.5" r="0.5" fill="currentColor" />
                   </svg>
                 </span>
                 <span className="label">Local</span>
