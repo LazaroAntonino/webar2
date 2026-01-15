@@ -112,9 +112,9 @@ export const Home = () => {
             </p>
 
             {/* OPCIONES */}
-            <div className="valuation-options valuation-options--center">
+            <div className="hero-options">
               <button
-                className="valuation-option"
+                className="hero-option"
                 onClick={() => {
                   setTipoSeleccionado("casa");
                   setModalOpen(true);
@@ -157,7 +157,7 @@ export const Home = () => {
               </button>
 
               <button
-                className="valuation-option"
+                className="hero-option"
                 onClick={() => {
                   setTipoSeleccionado("piso");
                   setModalOpen(true);
@@ -195,7 +195,7 @@ export const Home = () => {
               </button>
 
               <button
-                className="valuation-option"
+                className="hero-option"
                 onClick={() => {
                   setTipoSeleccionado("local");
                   setModalOpen(true);

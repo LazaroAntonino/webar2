@@ -168,17 +168,19 @@
     display: flex;
     gap: 12px;
     justify-content: center;
+    width: 100%;
 }
 
 .valuation-options--grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
 }
 
 .valuation-option {
     flex: 1;
-    padding: 16px 14px;
+    padding: 16px 12px;
     border-radius: 12px;
 
     background: #f8f9fb;
@@ -190,6 +192,8 @@
 
     cursor: pointer;
     transition: all 0.2s ease;
+    
+    min-width: 0;
 }
 
 .valuation-option:hover {
@@ -631,6 +635,12 @@
     
     .valuation-options--grid {
         grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    
+    .valuation-option {
+        padding: 14px 10px;
+        font-size: 13px;
     }
     
     /* Inputs */
