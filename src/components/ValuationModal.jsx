@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./ValuationModal.css";
 
+// URL del backend: en producción usa Render, en desarrollo usa localhost
+const API_URL = import.meta.env.PROD ? 'https://webar2.onrender.com' : 'http://localhost:3001';
+
 const initialForm = {
     tipo: "",
     operacion: "",
@@ -76,7 +79,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         endOfDay.setHours(23, 59, 59, 999); // Establece la hora al final del día
 
         try {
-            const response = await fetch('http://localhost:3001/api/check-availability', {
+            const response = await fetch(`${API_URL}/api/check-availability`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -193,7 +196,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
 
         try {
             // Llamada al endpoint del backend para crear la cita
-            const response = await fetch('http://localhost:3001/api/create-appointment', {
+            const response = await fetch(`${API_URL}/api/create-appointment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
