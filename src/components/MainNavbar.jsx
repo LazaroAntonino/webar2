@@ -46,7 +46,7 @@ export const MainNavbar = ({ onHomeClick }) => {
         <nav className="navbar__menu">
           <button onClick={() => scrollTo("propiedades")}>Propiedades</button>
           <button onClick={() => scrollTo("nosotros")}>Nosotros</button>
-          <button onClick={() => scrollTo("servicios")}>Servicios</button>
+          <button onClick={() => scrollTo("testimonios")}>Opiniones</button>
           <button onClick={() => scrollTo("contacto")}>Contacto</button>
         </nav>
 
@@ -80,7 +80,7 @@ export const MainNavbar = ({ onHomeClick }) => {
       <div className={`navbar__mobile ${menuOpen ? "is-open" : ""}`}>
         <button onClick={() => scrollTo("propiedades")}>Propiedades</button>
         <button onClick={() => scrollTo("nosotros")}>Nosotros</button>
-        <button onClick={() => scrollTo("servicios")}>Servicios</button>
+        <button onClick={() => scrollTo("testimonios")}>Opiniones</button>
         <button onClick={() => scrollTo("contacto")}>Contacto</button>
       </div>
     </header>

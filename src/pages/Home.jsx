@@ -355,7 +355,14 @@ export const Home = () => {
           <div className="cta-final__content container">
             <h2>¿Quieres vender o comprar sin complicaciones?</h2>
             <p>Un asesor senior te acompaña de principio a fin.</p>
-            <button className="cta-btn">Contáctanos ahora</button>
+            <button 
+              className="cta-btn"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              Contáctanos ahora
+            </button>
           </div>
         </section>
       </main>
