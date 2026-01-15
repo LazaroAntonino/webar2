@@ -14,29 +14,41 @@ app.use(express.json());
 app.use(cors());
 
 // --- Configuración de Autenticación con Google Calendar ---
-const serviceAccountKeyPath = path.join(__dirname, process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE || 'service-account.json');
-
 let serviceAccountKey;
-try {
-serviceAccountKey = JSON.parse(fs.readFileSync(serviceAccountKeyPath, 'utf8'));
-console.log('✅ Archivo service-account.json cargado correctamente.');
-console.log('DEBUG: client_email:', serviceAccountKey.client_email);
-console.log('DEBUG: private_key length:', serviceAccountKey.private_key ? serviceAccountKey.private_key.length : 0);
-} catch (error) {
-console.error('❌ ERROR: No se pudo leer o parsear el archivo JSON de la cuenta de servicio.');
-console.error(`Asegúrate de que el archivo existe en: ${serviceAccountKeyPath}`);
-console.error('Y que el nombre en tu .env es correcto para GOOGLE_SERVICE_ACCOUNT_KEY_FILE.');
-console.error('Detalles del error:', error.message);
-process.exit(1);
+
+// Opción 1: Leer desde variable de entorno (para producción/Render)
+if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+    try {
+        serviceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+        console.log('✅ Credenciales cargadas desde variable de entorno.');
+    } catch (error) {
+        console.error('❌ ERROR: No se pudo parsear GOOGLE_SERVICE_ACCOUNT_KEY.');
+        console.error('Detalles del error:', error.message);
+        process.exit(1);
+    }
+} 
+// Opción 2: Leer desde archivo (para desarrollo local)
+else {
+    const serviceAccountKeyPath = path.join(__dirname, process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE || 'service-account.json');
+    try {
+        serviceAccountKey = JSON.parse(fs.readFileSync(serviceAccountKeyPath, 'utf8'));
+        console.log('✅ Archivo service-account.json cargado correctamente.');
+    } catch (error) {
+        console.error('❌ ERROR: No se pudo leer o parsear el archivo JSON de la cuenta de servicio.');
+        console.error(`Asegúrate de que el archivo existe en: ${serviceAccountKeyPath}`);
+        console.error('Detalles del error:', error.message);
+        process.exit(1);
+    }
 }
 
-// --- CAMBIO AQUÍ: Inicializar jwtClient con 'credentials' ---
+console.log('DEBUG: client_email:', serviceAccountKey.client_email);
+
+// --- Inicializar jwtClient ---
 const jwtClient = new google.auth.JWT({
 email: serviceAccountKey.client_email,
 key: serviceAccountKey.private_key,
 scopes: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events'],
 });
-// --- FIN CAMBIO ---
 
 const calendar = google.calendar({
 version: 'v3',
