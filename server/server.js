@@ -94,7 +94,7 @@ try {
 
 app.post('/api/create-appointment', async (req, res) => {
 try {
-    const { email, selectedDateTime, duration, ...otherFormData } = req.body;
+    const { nombre, email, selectedDateTime, duration, ...otherFormData } = req.body;
     const targetCalendarId = process.env.GOOGLE_CALENDAR_ID;
 
     if (!email || !selectedDateTime || !duration || !targetCalendarId) {
@@ -105,10 +105,11 @@ try {
     const endTime = new Date(startTime.getTime() + parseInt(duration) * 60 * 1000);
 
     const event = {
-        summary: `Cita Valoración ${otherFormData.tipo || 'Inmueble'} - CP ${otherFormData.cp || 'N/A'} - ${email}`,
+        summary: `Cita Valoración - ${nombre || 'Cliente'} - ${otherFormData.tipo || 'Inmueble'} CP ${otherFormData.cp || 'N/A'}`,
         location: otherFormData.cp ? `Código Postal: ${otherFormData.cp}` : 'Ubicación no especificada',
         description: `📋 DATOS DEL CLIENTE\n` +
                      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                     `👤 Nombre: ${nombre || 'N/A'}\n` +
                      `📧 Email: ${email}\n` +
                      `📞 Teléfono: ${otherFormData.telefono || 'N/A'}\n\n` +
                      `🏠 DATOS DEL INMUEBLE\n` +

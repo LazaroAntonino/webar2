@@ -13,6 +13,7 @@ const initialForm = {
     banos: "",
     email: "",
     telefono: "",
+    nombre: "", // Nombre completo del usuario
     selectedDateTime: null, // Campo para almacenar la fecha y hora seleccionada
 };
 
@@ -51,10 +52,10 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         };
     }, [open]);
 
-    // --- Efecto: Cargar disponibilidad cuando el paso es 5 y la fecha cambia ---
-    // Se ejecuta al entrar al paso 5 o al cambiar el día en el calendario
+    // --- Efecto: Cargar disponibilidad cuando el paso es 6 y la fecha cambia ---
+    // Se ejecuta al entrar al paso 6 o al cambiar el día en el calendario
     useEffect(() => {
-        if (open && step === 5 && selectedDate) {
+        if (open && step === 6 && selectedDate) {
             fetchAvailability(selectedDate);
         }
     }, [open, step, selectedDate]); // Dependencias: re-ejecutar si alguna de estas cambia
@@ -62,7 +63,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
     if (!open) return null; // No renderizar si el modal no está abierto
 
     // --- Lógica de navegación entre pasos ---
-    const totalSteps = 7; // Ahora el formulario tiene 8 pasos (0 a 7, donde 7 es confirmación final)
+    const totalSteps = 8; // Ahora el formulario tiene 9 pasos (0 a 8, donde 8 es confirmación final)
     const nextStep = () => setStep(s => Math.min(s + 1, totalSteps));
     const prevStep = () => setStep(s => Math.max(s - 1, 0));
 
@@ -156,6 +157,12 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         return phoneDigits.length >= 9;
     };
     
+    // Validar nombre completo (mínimo 3 caracteres y al menos un espacio para nombre y apellido)
+    const isValidName = (name) => {
+        const trimmedName = name.trim();
+        return trimmedName.length >= 3 && trimmedName.includes(' ');
+    };
+    
     // Validar campos y actualizar errores
     const validateContactFields = () => {
         const newErrors = {};
@@ -171,6 +178,20 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+    
+    // Validar nombre y actualizar errores
+    const validateNameField = () => {
+        const newErrors = { ...errors };
+        
+        if (form.nombre && !isValidName(form.nombre)) {
+            newErrors.nombre = 'Introduce nombre y apellidos';
+        } else {
+            delete newErrors.nombre;
+        }
+        
+        setErrors(newErrors);
+        return !newErrors.nombre;
+    };
 
     /* ================= VALIDACIONES DE PASOS ================= */
     const canContinue = () => {
@@ -185,7 +206,10 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                        form.telefono !== "" && 
                        isValidEmail(form.email) && 
                        isValidPhone(form.telefono);
-            case 5: return form.selectedDateTime !== null;
+            case 5:
+                // Validar nombre completo (nombre y apellidos)
+                return form.nombre.trim() !== "" && isValidName(form.nombre);
+            case 6: return form.selectedDateTime !== null;
             default: return true;
         }
     };
@@ -202,6 +226,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    nombre: form.nombre, // Nombre completo del usuario
                     email: form.email,
                     selectedDateTime: form.selectedDateTime.toISOString(), // Envía la fecha y hora en formato ISO
                     duration: 30, // Duración fija de la cita en minutos (puedes hacerla configurable)
@@ -226,7 +251,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
             console.log("Cita creada:", data);
             
             // Avanzar al paso de confirmación exitosa
-            setStep(7);
+            setStep(8);
 
         } catch (error) {
             console.error("Hubo un error al agendar la cita:", error);
@@ -247,9 +272,9 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
 
                 {/* HEADER - Solo mostrar indicador de paso si no estamos en el paso final de confirmación */}
                 <div className="valuation-modal-header">
-                    {step < 7 ? (
+                    {step < 8 ? (
                         <span className="step-indicator">
-                            Paso {step + 1} de 7
+                            Paso {step + 1} de 8
                         </span>
                     ) : (
                         <span />
@@ -376,8 +401,38 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                         </>
                     )}
 
-                    {/* --- NUEVO PASO 5: Selección de Fecha y Hora --- */}
+                    {/* Paso 5: Nombre y Apellidos */}
                     {step === 5 && (
+                        <>
+                            <h2>¿Cómo te llamas?</h2>
+                            <p className="modal-subtitle">Necesitamos tu nombre para personalizar la cita</p>
+                            
+                            <div className="input-group">
+                                <div className="input-with-icon">
+                                    <input
+                                        type="text"
+                                        placeholder="Nombre y apellidos"
+                                        value={form.nombre}
+                                        className={errors.nombre ? 'input-error' : ''}
+                                        onChange={(e) => {
+                                            setForm(f => ({ ...f, nombre: e.target.value }));
+                                            if (errors.nombre) setErrors(prev => ({ ...prev, nombre: null }));
+                                        }}
+                                        onBlur={validateNameField}
+                                        autoComplete="name"
+                                    />
+                                    <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="8" r="4"/>
+                                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                                    </svg>
+                                </div>
+                                {errors.nombre && <span className="error-message">{errors.nombre}</span>}
+                            </div>
+                        </>
+                    )}
+
+                    {/* --- NUEVO PASO 6: Selección de Fecha y Hora --- */}
+                    {step === 6 && (
                         <>
                             <h2>Agenda una reunión</h2>
                             <p className="modal-subtitle">
@@ -482,11 +537,11 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                         </>
                     )}
 
-                    {/* --- PASO FINAL 6: Confirmación antes de enviar --- */}
-                    {step === 6 && (
+                    {/* --- PASO FINAL 7: Confirmación antes de enviar --- */}
+                    {step === 7 && (
                         <>
                             <div className="success-icon">📅</div>
-                            <h2>¡Todo listo!</h2>
+                            <h2>¡Todo listo, {form.nombre.split(' ')[0]}!</h2>
                             <p className="modal-subtitle">
                                 Confirma tu cita y un agente se pondrá en contacto contigo en menos de 24 horas.
                             </p>
@@ -505,13 +560,13 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                         </>
                     )}
 
-                    {/* --- PASO 7: Confirmación exitosa después de crear la cita --- */}
-                    {step === 7 && (
+                    {/* --- PASO 8: Confirmación exitosa después de crear la cita --- */}
+                    {step === 8 && (
                         <>
                             <div className="success-icon">✓</div>
                             <h2>¡Cita registrada!</h2>
                             <p className="modal-subtitle">
-                                Tu solicitud ha sido enviada correctamente.
+                                Tu solicitud ha sido enviada correctamente, {form.nombre.split(' ')[0]}.
                             </p>
                             <div className="success-message">
                                 Un agente se pondrá en contacto contigo en menos de 24 horas para la valoración de tu inmueble.
@@ -534,8 +589,8 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
 
                 {/* FOOTER */}
                 <div className="valuation-modal-footer">
-                    {/* Paso 7 = confirmación exitosa, solo mostrar botón "Entendido" */}
-                    {step === 7 ? (
+                    {/* Paso 8 = confirmación exitosa, solo mostrar botón "Entendido" */}
+                    {step === 8 ? (
                         <>
                             <span />
                             <button
@@ -562,9 +617,9 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                             <button
                                 className="modal-cta"
                                 disabled={!canContinue()}
-                                onClick={step === 6 ? handleFinish : nextStep}
+                                onClick={step === 7 ? handleFinish : nextStep}
                             >
-                                {step === 6 ? "Confirmar cita" : "Continuar"}
+                                {step === 7 ? "Confirmar cita" : "Continuar"}
                             </button>
                         </>
                     )}

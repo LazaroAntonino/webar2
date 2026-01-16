@@ -162,6 +162,11 @@
     margin-top: 4px;
 }
 
+/* --- Saludo personalizado con nombre --- */
+.valuation-modal-body h2 .user-name {
+    color: var(--gold);
+}
+
 /* ================= OPTIONS ================= */
 
 .valuation-options {
@@ -226,6 +231,7 @@
 
     outline: none;
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .valuation-modal-body input:focus {
@@ -235,6 +241,32 @@
 
 .valuation-modal-body input::placeholder {
     color: #b0b8c4;
+}
+
+/* Input con icono (para nombre) */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon input {
+    padding-left: 44px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #b0b8c4;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.input-with-icon input:focus + .input-icon,
+.input-with-icon input:not(:placeholder-shown) + .input-icon {
+    color: var(--gold);
 }
 
 /* Input con error */
@@ -647,6 +679,17 @@
     .double-input {
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+    
+    /* Input con icono en móvil */
+    .input-with-icon input {
+        padding-left: 40px;
+    }
+    
+    .input-icon {
+        left: 12px;
+        width: 18px;
+        height: 18px;
     }
 }
 
