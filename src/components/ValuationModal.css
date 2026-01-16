@@ -243,7 +243,7 @@
     color: #b0b8c4;
 }
 
-/* Input con icono (para nombre) */
+/* Input con icono (para nombre, habitaciones, baños) */
 .input-with-icon {
     position: relative;
 }
@@ -264,8 +264,12 @@
     transition: color 0.2s ease;
 }
 
-.input-with-icon input:focus + .input-icon,
-.input-with-icon input:not(:placeholder-shown) + .input-icon {
+/* Cambio de color cuando el input tiene foco o valor */
+.input-with-icon:focus-within .input-icon {
+    color: var(--gold);
+}
+
+.input-with-icon input:not(:placeholder-shown) ~ .input-icon {
     color: var(--gold);
 }
 

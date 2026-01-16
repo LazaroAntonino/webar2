@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ValuationModal.css";
+import { Bed, Bathtub } from "phosphor-react";
 
 // URL del backend: en producción usa Render, en desarrollo usa localhost
 const API_URL = import.meta.env.PROD ? 'https://webar2.onrender.com' : 'http://localhost:3001';
@@ -341,23 +342,31 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                         <>
                             <h2>Distribución</h2>
                             <div className="double-input">
-                                <div>
+                                <div className="input-group">
                                     <label>Habitaciones</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={form.habitaciones}
-                                        onChange={(e) => setForm(f => ({ ...f, habitaciones: e.target.value }))}
-                                    />
+                                    <div className="input-with-icon">
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                            value={form.habitaciones}
+                                            onChange={(e) => setForm(f => ({ ...f, habitaciones: e.target.value }))}
+                                        />
+                                        <Bed className="input-icon" size={20} weight="regular" />
+                                    </div>
                                 </div>
-                                <div>
+                                <div className="input-group">
                                     <label>Baños</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={form.banos}
-                                        onChange={(e) => setForm(f => ({ ...f, banos: e.target.value }))}
-                                    />
+                                    <div className="input-with-icon">
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            placeholder="0"
+                                            value={form.banos}
+                                            onChange={(e) => setForm(f => ({ ...f, banos: e.target.value }))}
+                                        />
+                                        <Bathtub className="input-icon" size={20} weight="regular" />
+                                    </div>
                                 </div>
                             </div>
                         </>
