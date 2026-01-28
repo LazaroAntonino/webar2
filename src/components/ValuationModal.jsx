@@ -5,6 +5,24 @@ import { Bed, Bathtub } from "phosphor-react";
 // URL del backend: en producción usa Render, en desarrollo usa localhost
 const API_URL = import.meta.env.PROD ? 'https://webar2.onrender.com' : 'http://localhost:3001';
 
+// URL del endpoint de Google Apps Script para guardar en Sheets
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxR2ydldxJEvNSmzqsv1mjQgi4vqa-QOmXyk5odayR2kfxgEaLwZFAm3dc_WWntnUPQ/exec'; // <-- Cambia esto por tu URL real
+
+async function sendToSheets(data) {
+    try {
+        await fetch(SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        return true;
+    } catch (err) {
+        console.error('Error logging to sheets:', err);
+        return false;
+    }
+}
+
 const initialForm = {
     tipo: "",
     operacion: "",
@@ -23,6 +41,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
     const [form, setForm] = useState(initialForm);
     const [busySlots, setBusySlots] = useState([]); // Slots ocupados del backend
     const [loadingAvailability, setLoadingAvailability] = useState(false); // Estado de carga
+    const [submitting, setSubmitting] = useState(false); // Estado mientras se crea la cita
     const [selectedDate, setSelectedDate] = useState(new Date()); // Día seleccionado en el calendario (solo la fecha)
     const [errors, setErrors] = useState({}); // Errores de validación
 
@@ -217,46 +236,33 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
 
     /* ================= MANEJADOR DE FINALIZACIÓN DEL FORMULARIO ================= */
     const handleFinish = async () => {
-        console.log("FORMULARIO FINAL:", form);
+        if (submitting) return; // Evitar dobles envíos
 
+        setSubmitting(true);
         try {
-            // Llamada al endpoint del backend para crear la cita
-            const response = await fetch(`${API_URL}/api/create-appointment`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nombre: form.nombre, // Nombre completo del usuario
-                    email: form.email,
-                    selectedDateTime: form.selectedDateTime.toISOString(), // Envía la fecha y hora en formato ISO
-                    duration: 30, // Duración fija de la cita en minutos (puedes hacerla configurable)
-                    // Pasa el resto de los datos del formulario que quieras incluir en la descripción del evento
-                    tipo: form.tipo, // Tipo de inmueble: piso, casa, local
-                    operacion: form.operacion,
-                    cp: form.cp,
-                    metros: form.metros,
-                    habitaciones: form.habitaciones,
-                    banos: form.banos,
-                    telefono: form.telefono,
-                }),
-            });
+            // Construir los datos a enviar a Sheets
+            const dataToSend = {
+                nombre: form.nombre,
+                email: form.email,
+                telefono: form.telefono,
+                tipo: form.tipo,
+                operacion: form.operacion,
+                cp: form.cp,
+                metros: form.metros,
+                habitaciones: form.habitaciones,
+                banos: form.banos,
+                fecha: form.selectedDateTime ? form.selectedDateTime.toLocaleDateString('es-ES') : '',
+                hora: form.selectedDateTime ? form.selectedDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+                fechaEnvio: new Date().toLocaleString('es-ES'),
+            };
 
-            if (!response.ok) {
-                // Si el backend responde con un error HTTP (ej. 400, 500)
-                const errorData = await response.json();
-                throw new Error(errorData.details || 'Error desconocido al crear la cita');
-            }
-
-            const data = await response.json(); // La respuesta del backend (ej. ID del evento, enlace)
-            console.log("Cita creada:", data);
-            
-            // Avanzar al paso de confirmación exitosa
+            await sendToSheets(dataToSend);
             setStep(8);
-
         } catch (error) {
             console.error("Hubo un error al agendar la cita:", error);
             alert(`Hubo un error al agendar la cita: ${error.message}. Por favor, inténtalo de nuevo.`);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -264,12 +270,20 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
     const handleClose = () => {
         setForm(initialForm);
         setStep(0);
+        setSubmitting(false);
         onClose();
     };
 
+    // Cerrar al hacer click fuera del modal (overlay)
+    const handleOverlayClick = (e) => {
+        if (e.target !== e.currentTarget) return; // Evita cerrar si el click es dentro del modal
+        if (submitting) return; // No cerrar mientras se envía
+        handleClose();
+    };
+
     return (
-        <div className="valuation-modal-overlay">
-            <div className="valuation-modal">
+        <div className="valuation-modal-overlay" onClick={handleOverlayClick}>
+            <div className="valuation-modal" onClick={(e) => e.stopPropagation()}>
 
                 {/* HEADER - Solo mostrar indicador de paso si no estamos en el paso final de confirmación */}
                 <div className="valuation-modal-header">
@@ -625,10 +639,17 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
 
                             <button
                                 className="modal-cta"
-                                disabled={!canContinue()}
+                                disabled={submitting || !canContinue()}
                                 onClick={step === 7 ? handleFinish : nextStep}
                             >
-                                {step === 7 ? "Confirmar cita" : "Continuar"}
+                                {step === 7 ? (
+                                    submitting ? (
+                                        <>
+                                            <span className="btn-spinner" aria-hidden="true"></span>
+                                            Creando cita...
+                                        </>
+                                    ) : "Confirmar cita"
+                                ) : "Continuar"}
                             </button>
                         </>
                     )}

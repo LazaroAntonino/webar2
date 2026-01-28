@@ -47,13 +47,26 @@ console.log('DEBUG: client_email:', serviceAccountKey.client_email);
 const jwtClient = new google.auth.JWT({
 email: serviceAccountKey.client_email,
 key: serviceAccountKey.private_key,
-scopes: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events'],
+scopes: [
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/calendar.events',
+    'https://www.googleapis.com/auth/spreadsheets', // Para escribir en Google Sheets
+],
 });
 
 const calendar = google.calendar({
 version: 'v3',
 auth: jwtClient,
 });
+
+const sheets = google.sheets({
+version: 'v4',
+auth: jwtClient,
+});
+
+// Config opcional para registrar citas en Sheets
+const SHEETS_SPREADSHEET_ID = process.env.SHEETS_SPREADSHEET_ID;
+const SHEETS_RANGE = process.env.SHEETS_RANGE || 'Citas!A:Z';
 
 // --- ¡¡¡DEFINICIÓN DE TUS ENDPOINTS!!! ---
 
@@ -146,6 +159,41 @@ try {
         calendarId: targetCalendarId,
         resource: event,
     });
+
+    // --- Registro en Google Sheets (histórico) ---
+    // Comparte la hoja con el client_email de la cuenta de servicio.
+    if (SHEETS_SPREADSHEET_ID) {
+        try {
+            const row = [
+                new Date().toISOString(), // Timestamp de inserción
+                nombre || 'N/A',
+                email,
+                otherFormData.telefono || 'N/A',
+                otherFormData.tipo || 'N/A',
+                otherFormData.operacion || 'N/A',
+                otherFormData.cp || 'N/A',
+                otherFormData.metros || 'N/A',
+                otherFormData.habitaciones || 'N/A',
+                otherFormData.banos || 'N/A',
+                startTime.toISOString(), // Fecha/hora cita (UTC)
+                startTime.toLocaleString('es-ES', { timeZone: process.env.APP_TIMEZONE || 'Europe/Madrid' }), // Fecha/hora local
+                response.data.id || '',
+                response.data.htmlLink || '',
+            ];
+
+            await sheets.spreadsheets.values.append({
+                spreadsheetId: SHEETS_SPREADSHEET_ID,
+                range: SHEETS_RANGE,
+                valueInputOption: 'RAW',
+                requestBody: {
+                    values: [row],
+                },
+            });
+        } catch (sheetErr) {
+            console.error('⚠️ No se pudo registrar en Google Sheets:', sheetErr.message);
+            // No interrumpir la respuesta al cliente si falla Sheets
+        }
+    }
 
     res.status(201).json({
         message: 'Cita creada con éxito',
