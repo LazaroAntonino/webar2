@@ -239,28 +239,70 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         if (submitting) return; // Evitar dobles envíos
 
         setSubmitting(true);
+        let calendarOk = false;
+        let sheetsOk = false;
+        let calendarError = null;
+        let sheetsError = null;
         try {
-            // Construir los datos a enviar a Sheets
-            const dataToSend = {
-                nombre: form.nombre,
-                email: form.email,
-                telefono: form.telefono,
-                tipo: form.tipo,
-                operacion: form.operacion,
-                cp: form.cp,
-                metros: form.metros,
-                habitaciones: form.habitaciones,
-                banos: form.banos,
-                fecha: form.selectedDateTime ? form.selectedDateTime.toLocaleDateString('es-ES') : '',
-                hora: form.selectedDateTime ? form.selectedDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-                fechaEnvio: new Date().toLocaleString('es-ES'),
-            };
+            // 1. Crear evento en Google Calendar (backend)
+            try {
+                const response = await fetch(`${API_URL}/api/create-appointment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre: form.nombre,
+                        email: form.email,
+                        telefono: form.telefono,
+                        tipo: form.tipo,
+                        operacion: form.operacion,
+                        cp: form.cp,
+                        metros: form.metros,
+                        habitaciones: form.habitaciones,
+                        banos: form.banos,
+                        selectedDateTime: form.selectedDateTime ? form.selectedDateTime.toISOString() : '',
+                        duration: 30,
+                    }),
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || 'Error desconocido al crear la cita en Google Calendar');
+                }
+                calendarOk = true;
+            } catch (err) {
+                calendarError = err;
+                console.error('Error creando evento en Google Calendar:', err);
+            }
 
-            await sendToSheets(dataToSend);
-            setStep(8);
-        } catch (error) {
-            console.error("Hubo un error al agendar la cita:", error);
-            alert(`Hubo un error al agendar la cita: ${error.message}. Por favor, inténtalo de nuevo.`);
+            // 2. Registrar en Google Sheets (Apps Script)
+            try {
+                const dataToSend = {
+                    nombre: form.nombre,
+                    email: form.email,
+                    telefono: form.telefono,
+                    tipo: form.tipo,
+                    operacion: form.operacion,
+                    cp: form.cp,
+                    metros: form.metros,
+                    habitaciones: form.habitaciones,
+                    banos: form.banos,
+                    fecha: form.selectedDateTime ? form.selectedDateTime.toLocaleDateString('es-ES') : '',
+                    hora: form.selectedDateTime ? form.selectedDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+                    fechaEnvio: new Date().toLocaleString('es-ES'),
+                };
+                await sendToSheets(dataToSend);
+                sheetsOk = true;
+            } catch (err) {
+                sheetsError = err;
+                console.error('Error registrando en Google Sheets:', err);
+            }
+
+            if (calendarOk) {
+                setStep(8);
+            } else {
+                let msg = 'Hubo un error al agendar la cita en Google Calendar.';
+                if (sheetsOk) msg += ' Sin embargo, la cita sí se registró en el histórico (Sheets).';
+                alert(msg);
+            }
         } finally {
             setSubmitting(false);
         }
