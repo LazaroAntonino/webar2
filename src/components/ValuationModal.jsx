@@ -3,7 +3,7 @@ import "./ValuationModal.css";
 import { Bed, Bathtub } from "phosphor-react";
 
 // URL del backend: en producción usa Render, en desarrollo usa localhost
-const API_URL = import.meta.env.PROD ? 'https://webar2.onrender.com' : 'http://localhost:3001';
+const API_URL = import.meta.env.PROD ? '' : 'http://localhost:3001';
 
 // URL del endpoint de Google Apps Script para guardar en Sheets
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxR2ydldxJEvNSmzqsv1mjQgi4vqa-QOmXyk5odayR2kfxgEaLwZFAm3dc_WWntnUPQ/exec'; // <-- Cambia esto por tu URL real
