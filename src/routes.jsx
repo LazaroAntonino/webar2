@@ -1,21 +1,70 @@
 // Import necessary components and functions from react-router-dom.
 
-import {
-    createBrowserRouter,
-    createRoutesFromElements,
-    Route,
-} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { Home } from "./pages/Home";
+import { Properties } from "./pages/Properties";
+import { PropertyDetail } from "./pages/PropertyDetail";
 
-export const router = createBrowserRouter(
-    createRoutesFromElements(
-    // CreateRoutesFromElements function allows you to build route elements declaratively.
-    // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
-    // Root, on the contrary, create a sister Route, if you have doubts, try it!
-    // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
-    // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
-
-      // Root Route: All navigation will start from here.
-        <Route path="/" element={<Home />} errorElement={<h1>Not found!</h1>} />
-    )
+// Componente de error personalizado
+const NotFound = () => (
+    <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f5f6f8',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        textAlign: 'center',
+        padding: '20px'
+    }}>
+        <span style={{ fontSize: '80px', marginBottom: '24px' }}>🏠</span>
+        <h1 style={{ 
+            fontSize: '32px', 
+            color: '#1c2e51', 
+            marginBottom: '12px',
+            fontFamily: 'Playfair Display, Georgia, serif'
+        }}>
+            Página no encontrada
+        </h1>
+        <p style={{ 
+            fontSize: '16px', 
+            color: '#9aa3b2', 
+            marginBottom: '32px',
+            maxWidth: '400px'
+        }}>
+            Lo sentimos, la página que buscas no existe o ha sido movida.
+        </p>
+        <a href="/" style={{
+            padding: '16px 32px',
+            background: '#1c2e51',
+            color: '#fff',
+            textDecoration: 'none',
+            borderRadius: '14px',
+            fontWeight: '600',
+            transition: 'all 0.3s ease'
+        }}>
+            Volver al inicio
+        </a>
+    </div>
 );
+
+export const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Home />,
+        errorElement: <NotFound />
+    },
+    {
+        path: "/inmuebles",
+        element: <Properties />
+    },
+    {
+        path: "/inmuebles/:id",
+        element: <PropertyDetail />
+    },
+    {
+        path: "*",
+        element: <NotFound />
+    }
+]);

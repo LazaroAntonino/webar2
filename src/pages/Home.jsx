@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Home.css";
 import { MainNavbar } from "../components/MainNavbar";
+import { Footer } from "../components/Footer";
 import { ValuationModal } from "../components/ValuationModal";
+import { PropertyCard } from "../components/PropertyCard";
+import inmueblesData from "../data/inmuebles.json";
 
 import {
   MapPinLine,
@@ -12,42 +16,10 @@ import {
   Bathtub,
   Ruler,
   Star,
+  ArrowRight,
 } from "phosphor-react";
 
-/* ================= DATA ================= */
-
-const featured = [
-  {
-    title: "Ático dúplex con terraza panorámica",
-    price: "1.150.000 €",
-    location: "Salamanca, Madrid",
-    area: "185 m²",
-    beds: 3,
-    baths: 3,
-    image:
-      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    title: "Vivienda jardín con piscina privada",
-    price: "890.000 €",
-    location: "Pedralbes, Barcelona",
-    area: "210 m²",
-    beds: 4,
-    baths: 3,
-    image:
-      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    title: "Loft industrial con luz natural",
-    price: "640.000 €",
-    location: "Ruzafa, Valencia",
-    area: "140 m²",
-    beds: 2,
-    baths: 2,
-    image:
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1400&q=80",
-  },
-];
+/* ================= DATA ESTÁTICA ================= */
 
 const reasons = [
   {
@@ -87,6 +59,11 @@ const testimonials = [
 export const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [tipoSeleccionado, setTipoSeleccionado] = useState("");
+
+  // Obtener inmuebles destacados del JSON (máximo 3)
+  const destacados = inmueblesData
+    .filter(inmueble => inmueble.destacado)
+    .slice(0, 3);
 
   return (
     <div className="home-shell">
@@ -277,31 +254,21 @@ export const Home = () => {
           </div>
 
           <div className="properties-grid container">
-            {featured.map((item) => (
-              <article className="property-card" key={item.title}>
-                <div
-                  className="property-card__image"
-                  style={{ backgroundImage: `url(${item.image})` }}
-                >
-                  <span className="pill pill-light">{item.location}</span>
-                </div>
-
-                <div className="property-card__body">
-                  <h3>{item.title}</h3>
-                  <p className="price">{item.price}</p>
-
-                  <div className="stats">
-                    <span><Bed size={18} /> {item.beds} hab.</span>
-                    <span><Bathtub size={18} /> {item.baths} baños</span>
-                    <span><Ruler size={18} /> {item.area}</span>
-                  </div>
-
-                  <button className="cta-btn slim">
-                    Ver propiedad
-                  </button>
-                </div>
-              </article>
+            {destacados.map((inmueble) => (
+              <PropertyCard 
+                key={inmueble.id} 
+                inmueble={inmueble} 
+                variant="featured"
+              />
             ))}
+          </div>
+
+          {/* Botón ver todos */}
+          <div className="properties-cta-wrapper container">
+            <Link to="/inmuebles" className="properties-see-all">
+              <span>Ver todos los inmuebles</span>
+              <ArrowRight size={18} weight="bold" />
+            </Link>
           </div>
         </section>
 
@@ -366,6 +333,9 @@ export const Home = () => {
           </div>
         </section>
       </main>
+
+      {/* ================= FOOTER ================= */}
+      <Footer />
 
       {/* ================= MODAL ================= */}
       <ValuationModal

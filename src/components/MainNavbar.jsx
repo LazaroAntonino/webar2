@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./MainNavbar.css";
 import logoSinFondo from "../img/LogoAR2BlancoSinFondoSinFooter.png";
-import { Phone, List } from "phosphor-react";
-import { useNavigate } from "react-router-dom";
+import { Phone, List, X } from "phosphor-react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 export const MainNavbar = ({ onHomeClick }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Detectar si estamos en la página principal
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -23,7 +27,12 @@ export const MainNavbar = ({ onHomeClick }) => {
   };
 
   const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    // Si no estamos en home, navegar a home primero
+    if (!isHomePage) {
+      navigate(`/#${id}`);
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    }
     setMenuOpen(false);
   };
 
@@ -44,7 +53,7 @@ export const MainNavbar = ({ onHomeClick }) => {
 
         {/* MENÚ DESKTOP */}
         <nav className="navbar__menu">
-          <button onClick={() => scrollTo("propiedades")}>Propiedades</button>
+          <Link to="/inmuebles" className="navbar__link">Inmuebles</Link>
           <button onClick={() => scrollTo("nosotros")}>Nosotros</button>
           <button onClick={() => scrollTo("testimonios")}>Opiniones</button>
           <button onClick={() => scrollTo("contacto")}>Contacto</button>
@@ -71,14 +80,14 @@ export const MainNavbar = ({ onHomeClick }) => {
             aria-label="Menú"
             aria-expanded={menuOpen}
           >
-            <List size={26} />
+            {menuOpen ? <X size={26} /> : <List size={26} />}
           </button>
         </div>
       </div>
 
       {/* MENÚ MÓVIL */}
       <div className={`navbar__mobile ${menuOpen ? "is-open" : ""}`}>
-        <button onClick={() => scrollTo("propiedades")}>Propiedades</button>
+        <Link to="/inmuebles" onClick={() => setMenuOpen(false)}>Inmuebles</Link>
         <button onClick={() => scrollTo("nosotros")}>Nosotros</button>
         <button onClick={() => scrollTo("testimonios")}>Opiniones</button>
         <button onClick={() => scrollTo("contacto")}>Contacto</button>

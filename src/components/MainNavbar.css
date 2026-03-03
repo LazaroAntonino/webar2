@@ -49,7 +49,8 @@
   gap: 24px;
 }
 
-.navbar__menu button {
+.navbar__menu button,
+.navbar__menu .navbar__link {
   background: none;
   border: none;
   color: #fff;
@@ -58,9 +59,11 @@
   cursor: pointer;
   position: relative;
   padding: 4px 0;
+  text-decoration: none;
 }
 
-.navbar__menu button::after {
+.navbar__menu button::after,
+.navbar__menu .navbar__link::after {
   content: "";
   position: absolute;
   left: 0;
@@ -71,7 +74,8 @@
   transition: width 0.2s ease;
 }
 
-.navbar__menu button:hover::after {
+.navbar__menu button:hover::after,
+.navbar__menu .navbar__link:hover::after {
   width: 100%;
 }
 
@@ -156,7 +160,18 @@
   cursor: pointer;
 }
 
-.navbar__mobile button:hover {
+.navbar__mobile a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 20px;
+  width: 100%;
+}
+
+.navbar__mobile button:hover,
+.navbar__mobile a:hover {
   background: rgba(255,255,255,0.06);
 }
 

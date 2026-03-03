@@ -264,6 +264,43 @@
 	background: linear-gradient(180deg, var(--neutral-1) 0%, #fff 50%, var(--neutral-1) 100%);
 }
 
+/* CTA Ver todos los inmuebles */
+.properties-cta-wrapper {
+	display: flex;
+	justify-content: center;
+	margin-top: 48px;
+}
+
+.properties-see-all {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 18px 36px;
+	background: var(--navy);
+	color: #fff;
+	text-decoration: none;
+	border-radius: 14px;
+	font-size: 15px;
+	font-weight: 600;
+	transition: all 0.3s ease;
+	box-shadow: 0 8px 24px rgba(28, 46, 81, 0.2);
+}
+
+.properties-see-all:hover {
+	background: var(--gold);
+	color: var(--navy);
+	transform: translateY(-3px);
+	box-shadow: 0 12px 32px rgba(250, 180, 34, 0.3);
+}
+
+.properties-see-all:hover svg {
+	transform: translateX(4px);
+}
+
+.properties-see-all svg {
+	transition: transform 0.3s ease;
+}
+
 /* Sección testimonios */
 #testimonios {
 	background: #fff;

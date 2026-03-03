@@ -1,32 +1,36 @@
-export const initialStore=()=>{
-  return{
-    message: null,
-    todos: [
-      {
-        id: 1,
-        title: "Make the bed",
-        background: null,
-      },
-      {
-        id: 2,
-        title: "Do my homework",
-        background: null,
-      }
-    ]
-  }
-}
+// Estado global de la aplicación AR2 Consulting
+// Preparado para uso futuro (favoritos, usuario, etc.)
+
+export const initialStore = () => {
+  return {
+    // Favoritos del usuario
+    favoritos: [],
+    // Usuario autenticado (futuro)
+    usuario: null,
+  };
+};
 
 export default function storeReducer(store, action = {}) {
-  switch(action.type){
-    case 'add_task':
-
-      const { id,  color } = action.payload
-
+  switch (action.type) {
+    case "ADD_FAVORITO":
       return {
         ...store,
-        todos: store.todos.map((todo) => (todo.id === id ? { ...todo, background: color } : todo))
+        favoritos: [...store.favoritos, action.payload],
       };
+
+    case "REMOVE_FAVORITO":
+      return {
+        ...store,
+        favoritos: store.favoritos.filter((id) => id !== action.payload),
+      };
+
+    case "SET_USUARIO":
+      return {
+        ...store,
+        usuario: action.payload,
+      };
+
     default:
-      throw Error('Unknown action.');
-  }    
+      return store;
+  }
 }
