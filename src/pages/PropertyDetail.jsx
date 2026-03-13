@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { MainNavbar } from "../components/MainNavbar";
 import { Footer } from "../components/Footer";
@@ -24,7 +24,8 @@ import {
   Package,
   ArrowsOut,
   Check,
-  NavigationArrow
+  NavigationArrow,
+  X
 } from "phosphor-react";
 import { useInmuebles, LoadingSpinner, ErrorMessage } from "../hooks/useInmuebles";
 import "./PropertyDetail.css";
@@ -35,6 +36,14 @@ export const PropertyDetail = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
+
+  // Refs para el swipe
+  const galleryRef = useRef(null);
+  const lightboxRef = useRef(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const isDragging = useRef(false);
 
   // Obtener inmuebles desde Google Sheets
   const { inmuebles, loading, error, refetch } = useInmuebles();
@@ -60,7 +69,106 @@ export const PropertyDetail = () => {
     window.scrollTo({ top: 0 });
     setCurrentImage(0); // Resetear al cambiar de inmueble
     setShowContactForm(false); // También cerrar el formulario de contacto
+    setShowLightbox(false); // Cerrar lightbox si está abierto
   }, [id]);
+
+  // Bloquear scroll del body cuando el lightbox está abierto
+  useEffect(() => {
+    if (showLightbox) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showLightbox]);
+
+  // Cerrar lightbox con tecla Escape
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!showLightbox) return;
+      if (e.key === 'Escape') {
+        setShowLightbox(false);
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        prevImage();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showLightbox]);
+
+  // Funciones de swipe
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    isDragging.current = true;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging.current) return;
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    
+    const swipeDistance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      if (swipeDistance > 0) {
+        nextImage();
+      } else {
+        prevImage();
+      }
+    }
+    
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
+  // Mouse drag para desktop
+  const handleMouseDown = (e) => {
+    touchStartX.current = e.clientX;
+    isDragging.current = true;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    touchEndX.current = e.clientX;
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    
+    const swipeDistance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      if (swipeDistance > 0) {
+        nextImage();
+      } else {
+        prevImage();
+      }
+    }
+    
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
+  // Abrir lightbox
+  const openLightbox = () => {
+    setShowLightbox(true);
+  };
+
+  // Cerrar lightbox
+  const closeLightbox = () => {
+    setShowLightbox(false);
+  };
 
   // Estado de carga
   if (loading) {
@@ -218,19 +326,104 @@ export const PropertyDetail = () => {
     <div className="property-detail-page">
       <MainNavbar />
 
+      {/* LIGHTBOX / MODAL FULLSCREEN */}
+      {showLightbox && (
+        <div 
+          className="lightbox-overlay"
+          onClick={closeLightbox}
+        >
+          <div 
+            className="lightbox-container"
+            onClick={(e) => e.stopPropagation()}
+            ref={lightboxRef}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            {/* Botón cerrar */}
+            <button className="lightbox-close" onClick={closeLightbox}>
+              <X size={28} weight="bold" />
+            </button>
+
+            {/* Contador */}
+            <div className="lightbox-counter">
+              {currentImage + 1} / {imagenes.length}
+            </div>
+
+            {/* Imagen principal */}
+            <div className="lightbox-image-wrapper">
+              <img 
+                src={imagenes[currentImage]} 
+                alt={`${titulo} - Imagen ${currentImage + 1}`}
+                draggable="false"
+              />
+            </div>
+
+            {/* Navegación */}
+            <button 
+              className="lightbox-nav lightbox-nav--prev" 
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            >
+              <CaretLeft size={32} weight="bold" />
+            </button>
+            <button 
+              className="lightbox-nav lightbox-nav--next" 
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            >
+              <CaretRight size={32} weight="bold" />
+            </button>
+
+            {/* Thumbnails en lightbox */}
+            <div className="lightbox-thumbs">
+              {imagenes.map((img, idx) => (
+                <button 
+                  key={idx}
+                  className={`lightbox-thumb ${idx === currentImage ? 'active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); setCurrentImage(idx); }}
+                >
+                  <img src={img} alt={`Miniatura ${idx + 1}`} draggable="false" />
+                </button>
+              ))}
+            </div>
+
+            {/* Indicador de swipe en móvil */}
+            <div className="lightbox-swipe-hint">
+              <span>Desliza para navegar</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* GALERÍA */}
       <section className="property-gallery">
-        <div className="property-gallery__main">
+        <div 
+          className="property-gallery__main"
+          ref={galleryRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
           <img 
             src={imagenes[currentImage]} 
             alt={`${titulo} - Imagen ${currentImage + 1}`}
+            onClick={openLightbox}
+            className="gallery-main-image"
+            draggable="false"
           />
           
           {/* Navegación */}
-          <button className="gallery-nav gallery-nav--prev" onClick={prevImage}>
+          <button className="gallery-nav gallery-nav--prev" onClick={(e) => { e.stopPropagation(); prevImage(); }}>
             <CaretLeft size={24} weight="bold" />
           </button>
-          <button className="gallery-nav gallery-nav--next" onClick={nextImage}>
+          <button className="gallery-nav gallery-nav--next" onClick={(e) => { e.stopPropagation(); nextImage(); }}>
             <CaretRight size={24} weight="bold" />
           </button>
 
@@ -253,10 +446,16 @@ export const PropertyDetail = () => {
             <button 
               className={`gallery-action ${copied ? 'gallery-action--copied' : ''}`} 
               title={copied ? "¡Enlace copiado!" : "Compartir enlace"}
-              onClick={handleShare}
+              onClick={(e) => { e.stopPropagation(); handleShare(); }}
             >
               {copied ? <Check size={20} weight="bold" /> : <Share size={20} />}
             </button>
+          </div>
+
+          {/* Indicador de expandir */}
+          <div className="gallery-expand-hint" onClick={openLightbox}>
+            <ArrowsOut size={18} weight="bold" />
+            <span>Ver en grande</span>
           </div>
         </div>
 
