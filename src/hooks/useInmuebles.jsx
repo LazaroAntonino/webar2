@@ -14,7 +14,7 @@ const InmueblesContext = createContext(null);
  * que usa la aplicación.
  * 
  * Campos del CSV:
- * id;titulo;slug;tipo;operacion;precio;direccion;barrio;ciudad;cp;lat;lng;
+ * id;mostrarenweb;titulo;slug;tipo;operacion;precio;direccion;barrio;ciudad;cp;lat;lng;
  * m2Construidos;m2Utiles;habitaciones;banos;terraza;m2Terraza;ascensor;garaje;
  * plazasGaraje;trastero;piscina;aireAco;calefaccion;orientacion;planta;antiguedad;
  * parcela;destacado;nuevo;descripcion;descripcionCorta;imagenes;fechaPublicacion;
@@ -61,6 +61,7 @@ const mapRowToInmueble = (row) => {
   return {
     // Campos principales
     id: String(row.id || ""),
+    mostrarEnWeb: parseBoolean(row.mostrarenweb),
     titulo: row.titulo || "",
     slug: row.slug || "",
     tipo: row.tipo || "piso",
@@ -152,11 +153,13 @@ const fetchInmueblesFromGoogleSheets = async () => {
         }
         
         // Mapear cada fila a la estructura de inmueble
+        // y filtrar solo los que tienen mostrarEnWeb: true
         const inmuebles = results.data
           .filter((row) => row.id && String(row.id).trim() !== "") // Filtrar filas vacías
-          .map(mapRowToInmueble);
+          .map(mapRowToInmueble)
+          .filter((inmueble) => inmueble.mostrarEnWeb === true); // Solo mostrar inmuebles con mostrarEnWeb: true
         
-        console.log("Inmuebles mapeados:", inmuebles.length);
+        console.log("Inmuebles mapeados y filtrados (mostrarEnWeb: true):", inmuebles.length);
         
         resolve(inmuebles);
       },
