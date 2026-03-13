@@ -5,7 +5,7 @@ import { Footer } from "../components/Footer";
 import { PropertyCard } from "../components/PropertyCard";
 import { PropertyFilters } from "../components/PropertyFilters";
 import { House, Buildings, TrendUp, CaretRight } from "phosphor-react";
-import inmueblesData from "../data/inmuebles.json";
+import { useInmuebles, LoadingSpinner, ErrorMessage } from "../hooks/useInmuebles";
 import "./Properties.css";
 
 export const Properties = () => {
@@ -20,9 +20,12 @@ export const Properties = () => {
     habitaciones: "todas"
   });
 
+  // Obtener inmuebles desde Google Sheets
+  const { inmuebles, loading, error, refetch } = useInmuebles();
+
   // Filtrar inmuebles
   const inmueblesFiltrados = useMemo(() => {
-    return inmueblesData.filter(inmueble => {
+    return inmuebles.filter(inmueble => {
       // Búsqueda por texto
       if (filtros.busqueda) {
         const searchLower = filtros.busqueda.toLowerCase();
@@ -64,16 +67,16 @@ export const Properties = () => {
 
       return true;
     });
-  }, [filtros]);
+  }, [filtros, inmuebles]);
 
   // Estadísticas rápidas
   const stats = useMemo(() => {
-    const ventas = inmueblesData.filter(i => i.operacion === 'venta').length;
-    const alquileres = inmueblesData.filter(i => i.operacion === 'alquiler').length;
-    const pisos = inmueblesData.filter(i => i.tipo === 'piso').length;
-    const casas = inmueblesData.filter(i => i.tipo === 'casa').length;
-    return { ventas, alquileres, pisos, casas, total: inmueblesData.length };
-  }, []);
+    const ventas = inmuebles.filter(i => i.operacion === 'venta').length;
+    const alquileres = inmuebles.filter(i => i.operacion === 'alquiler').length;
+    const pisos = inmuebles.filter(i => i.tipo === 'piso').length;
+    const casas = inmuebles.filter(i => i.tipo === 'casa').length;
+    return { ventas, alquileres, pisos, casas, total: inmuebles.length };
+  }, [inmuebles]);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -127,8 +130,12 @@ export const Properties = () => {
             totalResultados={inmueblesFiltrados.length}
           />
 
-          {/* GRID DE RESULTADOS */}
-          {inmueblesFiltrados.length > 0 ? (
+          {/* ESTADOS: Loading / Error / Resultados */}
+          {loading ? (
+            <LoadingSpinner />
+          ) : error ? (
+            <ErrorMessage message={error} onRetry={refetch} />
+          ) : inmueblesFiltrados.length > 0 ? (
             <div className="properties-grid">
               {inmueblesFiltrados.map(inmueble => (
                 <PropertyCard key={inmueble.id} inmueble={inmueble} />

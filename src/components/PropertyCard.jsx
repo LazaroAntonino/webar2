@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Bed, Bathtub, Ruler, MapPin, Heart } from "phosphor-react";
+import { Bed, Bathtub, Ruler, MapPin } from "phosphor-react";
 import "./PropertyCard.css";
 
 export const PropertyCard = ({ inmueble, variant = "default" }) => {

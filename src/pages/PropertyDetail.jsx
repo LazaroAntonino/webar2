@@ -19,13 +19,14 @@ import {
   Phone,
   EnvelopeSimple,
   Share,
-  Heart,
   House,
   Buildings,
   Package,
-  ArrowsOut
+  ArrowsOut,
+  Check,
+  NavigationArrow
 } from "phosphor-react";
-import inmueblesData from "../data/inmuebles.json";
+import { useInmuebles, LoadingSpinner, ErrorMessage } from "../hooks/useInmuebles";
 import "./PropertyDetail.css";
 
 export const PropertyDetail = () => {
@@ -33,27 +34,59 @@ export const PropertyDetail = () => {
   const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Obtener inmuebles desde Google Sheets
+  const { inmuebles, loading, error, refetch } = useInmuebles();
 
   // Buscar el inmueble
   const inmueble = useMemo(() => {
-    return inmueblesData.find(item => item.id === id);
-  }, [id]);
+    return inmuebles.find(item => item.id === id);
+  }, [id, inmuebles]);
 
   // Inmuebles relacionados (misma ciudad o tipo)
   const relacionados = useMemo(() => {
     if (!inmueble) return [];
-    return inmueblesData
+    return inmuebles
       .filter(item => 
         item.id !== id && 
         (item.ubicacion.ciudad === inmueble.ubicacion.ciudad || item.tipo === inmueble.tipo)
       )
       .slice(0, 3);
-  }, [inmueble, id]);
+  }, [inmueble, id, inmuebles]);
 
-  // Scroll to top
+  // Reset imagen y scroll cuando cambia el inmueble
   useEffect(() => {
     window.scrollTo({ top: 0 });
+    setCurrentImage(0); // Resetear al cambiar de inmueble
+    setShowContactForm(false); // También cerrar el formulario de contacto
   }, [id]);
+
+  // Estado de carga
+  if (loading) {
+    return (
+      <div className="property-detail-page">
+        <MainNavbar />
+        <div style={{ paddingTop: 'var(--navbar-height)', minHeight: '60vh' }}>
+          <LoadingSpinner />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Estado de error
+  if (error) {
+    return (
+      <div className="property-detail-page">
+        <MainNavbar />
+        <div style={{ paddingTop: 'var(--navbar-height)', minHeight: '60vh' }}>
+          <ErrorMessage message={error} onRetry={refetch} />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   // Si no existe el inmueble
   if (!inmueble) {
@@ -117,6 +150,54 @@ export const PropertyDetail = () => {
     setCurrentImage((prev) => (prev - 1 + imagenes.length) % imagenes.length);
   };
 
+  // Compartir - copiar URL al portapapeles
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback para navegadores que no soportan clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = window.location.href;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  // Abrir ubicación en Google Maps
+  const openInMaps = () => {
+    const query = encodeURIComponent(`${ubicacion.direccion}, ${ubicacion.ciudad}, España`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  };
+
+  // Manejar envío del formulario de contacto
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const nombre = formData.get('nombre');
+    const email = formData.get('email');
+    const telefono = formData.get('telefono');
+    const mensaje = formData.get('mensaje');
+    
+    const subject = encodeURIComponent(`Consulta sobre: ${titulo}`);
+    const body = encodeURIComponent(
+      `Hola,\n\nMe interesa el inmueble: ${titulo}\n\n` +
+      `Mis datos de contacto:\n` +
+      `- Nombre: ${nombre}\n` +
+      `- Email: ${email}\n` +
+      `- Teléfono: ${telefono || 'No proporcionado'}\n\n` +
+      `Mensaje:\n${mensaje}\n\n` +
+      `Enlace al inmueble: ${window.location.href}`
+    );
+    
+    window.location.href = `mailto:${agente.email}?subject=${subject}&body=${body}`;
+  };
+
   // Características para mostrar
   const caracteristicasLista = [
     { icon: Bed, label: "Habitaciones", value: caracteristicas.habitaciones, show: caracteristicas.habitaciones > 0 },
@@ -167,13 +248,14 @@ export const PropertyDetail = () => {
             {destacado && <span className="badge badge--destacado">Destacado</span>}
           </div>
 
-          {/* Acciones */}
+          {/* Acción compartir */}
           <div className="gallery-actions">
-            <button className="gallery-action" title="Compartir">
-              <Share size={20} />
-            </button>
-            <button className="gallery-action" title="Guardar">
-              <Heart size={20} />
+            <button 
+              className={`gallery-action ${copied ? 'gallery-action--copied' : ''}`} 
+              title={copied ? "¡Enlace copiado!" : "Compartir enlace"}
+              onClick={handleShare}
+            >
+              {copied ? <Check size={20} weight="bold" /> : <Share size={20} />}
             </button>
           </div>
         </div>
@@ -304,11 +386,11 @@ export const PropertyDetail = () => {
                     <span className="location-value">{ubicacion.cp}</span>
                   </div>
                 </div>
-                {/* Aquí podrías añadir un mapa con Google Maps o Mapbox */}
-                <div className="property-map-placeholder">
-                  <MapPin size={32} />
-                  <span>Ver en mapa</span>
-                </div>
+                {/* Botón para abrir en Google Maps */}
+                <button className="property-map-btn" onClick={openInMaps}>
+                  <NavigationArrow size={22} weight="bold" />
+                  <span>Ver ubicación en Google Maps</span>
+                </button>
               </div>
 
               {/* Fecha publicación */}
@@ -347,21 +429,14 @@ export const PropertyDetail = () => {
                   </a>
                 </div>
 
-                <button 
-                  className="contact-btn contact-btn--outline"
-                  onClick={() => setShowContactForm(!showContactForm)}
-                >
-                  Solicitar información
-                </button>
-
                 {showContactForm && (
-                  <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
-                    <input type="text" placeholder="Tu nombre" required />
-                    <input type="email" placeholder="Tu email" required />
-                    <input type="tel" placeholder="Tu teléfono" />
-                    <textarea placeholder="Me interesa este inmueble..." rows={3}></textarea>
+                  <form className="contact-form" onSubmit={handleContactSubmit}>
+                    <input type="text" name="nombre" placeholder="Tu nombre" required />
+                    <input type="email" name="email" placeholder="Tu email" required />
+                    <input type="tel" name="telefono" placeholder="Tu teléfono (opcional)" />
+                    <textarea name="mensaje" placeholder="Me interesa este inmueble..." rows={3} required></textarea>
                     <button type="submit" className="contact-form__submit">
-                      Enviar consulta
+                      Enviar consulta por email
                     </button>
                   </form>
                 )}

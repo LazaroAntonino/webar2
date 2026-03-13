@@ -5,7 +5,7 @@ import { MainNavbar } from "../components/MainNavbar";
 import { Footer } from "../components/Footer";
 import { ValuationModal } from "../components/ValuationModal";
 import { PropertyCard } from "../components/PropertyCard";
-import inmueblesData from "../data/inmuebles.json";
+import { useInmuebles, LoadingSpinner } from "../hooks/useInmuebles";
 
 import {
   MapPinLine,
@@ -60,8 +60,11 @@ export const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [tipoSeleccionado, setTipoSeleccionado] = useState("");
 
-  // Obtener inmuebles destacados del JSON (máximo 3)
-  const destacados = inmueblesData
+  // Obtener inmuebles desde Google Sheets
+  const { inmuebles, loading } = useInmuebles();
+
+  // Obtener inmuebles destacados (máximo 3)
+  const destacados = inmuebles
     .filter(inmueble => inmueble.destacado)
     .slice(0, 3);
 
@@ -254,13 +257,21 @@ export const Home = () => {
           </div>
 
           <div className="properties-grid container">
-            {destacados.map((inmueble) => (
-              <PropertyCard 
-                key={inmueble.id} 
-                inmueble={inmueble} 
-                variant="featured"
-              />
-            ))}
+            {loading ? (
+              <LoadingSpinner />
+            ) : destacados.length > 0 ? (
+              destacados.map((inmueble) => (
+                <PropertyCard 
+                  key={inmueble.id} 
+                  inmueble={inmueble} 
+                  variant="featured"
+                />
+              ))
+            ) : (
+              <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>
+                No hay propiedades destacadas disponibles en este momento.
+              </p>
+            )}
           </div>
 
           {/* Botón ver todos */}
