@@ -44,6 +44,7 @@ export const PropertyDetail = () => {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const isDragging = useRef(false);
+  const hasSwiped = useRef(false);
 
   // Obtener inmuebles desde Google Sheets
   const { inmuebles, loading, error, refetch } = useInmuebles();
@@ -103,7 +104,9 @@ export const PropertyDetail = () => {
   // Funciones de swipe
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
     isDragging.current = true;
+    hasSwiped.current = false;
   };
 
   const handleTouchMove = (e) => {
@@ -118,7 +121,9 @@ export const PropertyDetail = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50;
 
+    // Solo cambiar imagen si realmente hubo un swipe (movimiento significativo)
     if (Math.abs(swipeDistance) > minSwipeDistance) {
+      hasSwiped.current = true;
       if (swipeDistance > 0) {
         nextImage();
       } else {
@@ -133,7 +138,9 @@ export const PropertyDetail = () => {
   // Mouse drag para desktop
   const handleMouseDown = (e) => {
     touchStartX.current = e.clientX;
+    touchEndX.current = e.clientX;
     isDragging.current = true;
+    hasSwiped.current = false;
   };
 
   const handleMouseMove = (e) => {
@@ -148,7 +155,10 @@ export const PropertyDetail = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50;
 
+    // Solo cambiar imagen si realmente hubo un swipe (movimiento significativo)
+    // Si el usuario solo hizo click sin mover, no hacer nada aquí
     if (Math.abs(swipeDistance) > minSwipeDistance) {
+      hasSwiped.current = true;
       if (swipeDistance > 0) {
         nextImage();
       } else {
@@ -160,9 +170,15 @@ export const PropertyDetail = () => {
     touchEndX.current = 0;
   };
 
-  // Abrir lightbox
+  // Abrir lightbox (solo si no hubo swipe)
   const openLightbox = () => {
-    setShowLightbox(true);
+    // Pequeño delay para asegurar que hasSwiped se actualizó
+    setTimeout(() => {
+      if (!hasSwiped.current) {
+        setShowLightbox(true);
+      }
+      hasSwiped.current = false;
+    }, 10);
   };
 
   // Cerrar lightbox

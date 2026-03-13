@@ -140,7 +140,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 80px 60px;
+  padding: 80px 100px 120px;
   box-sizing: border-box;
   cursor: grab;
 }
@@ -174,13 +174,13 @@
 
 /* Navegación lightbox */
 .lightbox-nav {
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translateY(-50%);
   width: 56px;
   height: 56px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -188,7 +188,7 @@
   cursor: pointer;
   color: #fff;
   transition: all 0.25s ease;
-  z-index: 10;
+  z-index: 100;
 }
 
 .lightbox-nav:hover {
@@ -199,11 +199,11 @@
 }
 
 .lightbox-nav--prev {
-  left: 24px;
+  left: 20px;
 }
 
 .lightbox-nav--next {
-  right: 24px;
+  right: 20px;
 }
 
 /* Thumbnails lightbox */
@@ -1233,8 +1233,8 @@
 
 @media (max-width: 1024px) {
   .lightbox-nav {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
   }
 
   .lightbox-nav--prev {
@@ -1246,7 +1246,7 @@
   }
 
   .lightbox-image-wrapper {
-    padding: 70px 50px;
+    padding: 80px 80px 120px;
   }
 }
 
@@ -1265,8 +1265,8 @@
   }
 
   .lightbox-nav {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
   }
 
   .lightbox-nav svg {
@@ -1275,15 +1275,15 @@
   }
 
   .lightbox-nav--prev {
-    left: 10px;
+    left: 12px;
   }
 
   .lightbox-nav--next {
-    right: 10px;
+    right: 12px;
   }
 
   .lightbox-image-wrapper {
-    padding: 60px 16px 120px;
+    padding: 70px 70px 130px;
   }
 
   .lightbox-thumbs {
@@ -1336,13 +1336,13 @@
   }
 
   .lightbox-nav {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
   }
 
   .lightbox-nav svg {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 
   .lightbox-nav--prev {
@@ -1354,7 +1354,7 @@
   }
 
   .lightbox-image-wrapper {
-    padding: 50px 12px 100px;
+    padding: 60px 60px 110px;
   }
 
   .lightbox-thumbs {
