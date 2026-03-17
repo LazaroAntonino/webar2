@@ -239,7 +239,7 @@ export const Home = () => {
 
             {/* TRUST */}
             <div className="trust-list">
-              <span>✔ Más de 250.000 propiedades vendidas</span>
+              <span>✔ Más de 2.000 propiedades vendidas</span>
               <span>✔ Presencia nacional e internacional</span>
               <span>✔ Expertos locales certificados</span>
             </div>
