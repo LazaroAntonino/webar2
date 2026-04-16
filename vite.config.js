@@ -13,8 +13,20 @@ export default defineConfig({
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },
         },
+        // Restringir acceso del servidor solo a carpetas permitidas
+        fs: {
+            strict: true,
+            allow: ['./src', './node_modules', './public', '.'],
+            deny: ['.git', '.env', '.env.*', '**/node_modules/.vite/**']
+        }
     },
     build: {
         outDir: 'dist'
+    },
+    // Excluir carpetas problemáticas del análisis de dependencias
+    optimizeDeps: {
+        exclude: [],
+        // Forzar que solo analice dentro de src
+        entries: ['src/main.jsx']
     }
 });
