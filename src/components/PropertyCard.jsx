@@ -7,7 +7,6 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
   const {
     id,
     titulo,
-    slug,
     tipo,
     operacion,
     precio,
@@ -38,7 +37,7 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
       <Link to={`/inmuebles/${id}`} className="property-card__image-link">
         <div 
           className="property-card__image"
-          style={{ backgroundImage: `url(${imagenes[0]})` }}
+          style={{ backgroundImage: imagenes?.[0] ? `url(${imagenes[0]})` : 'none' }}
         >
           {/* Badges */}
           <div className="property-card__badges">

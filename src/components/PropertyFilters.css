@@ -51,7 +51,7 @@
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 15px;
+  font-size: 16px; /* ≥16px evita zoom automático en iOS */
   color: var(--text-main);
   outline: none;
 }
@@ -155,11 +155,11 @@
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: all 0.35s ease;
+  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
 }
 
 .filters-expanded.is-open {
-  max-height: 500px;
+  max-height: 800px;
   opacity: 1;
   padding: 24px;
   border-top: 1px solid rgba(28, 46, 81, 0.06);
@@ -258,6 +258,7 @@
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
+  font-family: 'Inter', sans-serif;
   color: var(--navy);
   cursor: pointer;
   appearance: none;
@@ -349,7 +350,7 @@
 
   .filters-expanded.is-open {
     padding: 16px;
-    max-height: 600px;
+    max-height: 900px;
   }
 
   .filters-grid {
@@ -394,7 +395,7 @@
   }
 
   .search-input input {
-    font-size: 14px;
+    font-size: 16px; /* ≥16px evita zoom automático en iOS */
   }
 
   .filters-toggle {
@@ -474,7 +475,7 @@
   /* Select mejorado */
   .filter-select {
     padding: 11px 36px 11px 14px;
-    font-size: 13px;
+    font-size: 16px; /* ≥16px evita zoom automático en iOS */
     border-radius: 10px;
   }
 

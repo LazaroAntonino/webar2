@@ -94,6 +94,7 @@ export const Home = () => {
             {/* OPCIONES */}
             <div className="hero-options">
               <button
+                type="button"
                 className="hero-option"
                 onClick={() => {
                   setTipoSeleccionado("casa");
@@ -137,6 +138,7 @@ export const Home = () => {
               </button>
 
               <button
+                type="button"
                 className="hero-option"
                 onClick={() => {
                   setTipoSeleccionado("piso");
@@ -175,6 +177,7 @@ export const Home = () => {
               </button>
 
               <button
+                type="button"
                 className="hero-option"
                 onClick={() => {
                   setTipoSeleccionado("local");

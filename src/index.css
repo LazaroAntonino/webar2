@@ -4,24 +4,81 @@
 	--navy: #1c2e51;
 	--gold: #fab422;
 	--neutral-0: #ffffff;
-	--neutral-1: #f5f6f8;
+	--neutral-1: #f8f7f4;
 	--neutral-2: #e6e8ec;
 	--text-main: #2b2b2b;
 	--text-secondary: #9aa3b2;
+
+		/* Navy scale */
+		--navy-light: #2a3f6b;
+		--navy-dark: #15243f;
+		--navy-deep: #0f1a2e;
+
+		/* Gold scale */
+		--gold-light: #fcc44a;
+		--gold-dark: #d99a16;
+		--gold-soft: rgba(250, 180, 34, 0.12);
+
+		/* Champagne */
+		--champagne: #f3ede1;
+
+		/* Shadows */
+		--shadow-sm: 0 2px 8px rgba(15, 26, 46, 0.06);
+		--shadow-md: 0 8px 24px rgba(15, 26, 46, 0.10);
+		--shadow-lg: 0 20px 50px rgba(15, 26, 46, 0.14);
+		--shadow-gold: 0 12px 32px rgba(250, 180, 34, 0.28);
+
+		/* Radius */
+		--radius-xs: 2px;
+		--radius-sm: 6px;
+		--radius-md: 12px;
+		--radius-lg: 20px;
+
+		/* Motion */
+		--ease-out-luxury: cubic-bezier(0.22, 1, 0.36, 1);
+
 		--navbar-height: 86px;
 	font-family: 'Inter', 'Lato', system-ui, -apple-system, sans-serif;
 	color: var(--text-main);
 	background: var(--neutral-1);
 	min-height: 100vh;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
 }
 
 * {
 	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Heredar fuente en todos los form elements (iOS Safari no hereda por defecto) */
+input,
+select,
+textarea,
+button {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
 }
 
 body {
 	margin: 0;
+	font-family: inherit; /* Hereda Inter de :root — override de cualquier reset externo */
 	background: var(--neutral-1);
+	overscroll-behavior-y: none;
 }
 
 a {
@@ -38,4 +95,10 @@ h1, h2, h3, h4 {
 p {
 	margin: 0;
 	color: var(--text-secondary);
+}
+
+/* Contenedor global reutilizable */
+.container {
+	width: min(1200px, 94%);
+	margin: 0 auto;
 }

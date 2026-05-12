@@ -104,6 +104,9 @@ const mapRowToInmueble = (row) => {
     destacado: parseBoolean(row.destacado),
     nuevo: parseBoolean(row.nuevo),
     
+    // Precio con tipo (derivado de operación: alquiler → "mes", venta → "venta")
+    precioTipo: (row.operacion || "").trim().toLowerCase() === "alquiler" ? "mes" : "venta",
+    
     // Descripciones
     descripcion: row.descripcion || "",
     descripcionCorta: row.descripcionCorta || "",
@@ -136,8 +139,6 @@ const fetchInmueblesFromGoogleSheets = async () => {
   
   const csvText = await response.text();
   
-  console.log("CSV recibido (primeros 500 chars):", csvText.substring(0, 500));
-  
   return new Promise((resolve, reject) => {
     Papa.parse(csvText, {
       header: true,
@@ -145,9 +146,6 @@ const fetchInmueblesFromGoogleSheets = async () => {
       skipEmptyLines: true,
       transformHeader: (header) => header.trim(),
       complete: (results) => {
-        console.log("Filas parseadas:", results.data.length);
-        console.log("Primera fila:", results.data[0]);
-        
         if (results.errors.length > 0) {
           console.warn("Advertencias al parsear CSV:", results.errors);
         }
@@ -158,8 +156,6 @@ const fetchInmueblesFromGoogleSheets = async () => {
           .filter((row) => row.id && String(row.id).trim() !== "") // Filtrar filas vacías
           .map(mapRowToInmueble)
           .filter((inmueble) => inmueble.mostrarEnWeb === true); // Solo mostrar inmuebles con mostrarEnWeb: true
-        
-        console.log("Inmuebles mapeados y filtrados (mostrarEnWeb: true):", inmuebles.length);
         
         resolve(inmuebles);
       },
@@ -174,21 +170,20 @@ const fetchInmueblesFromGoogleSheets = async () => {
 /**
  * Hook personalizado para consumir los datos de inmuebles.
  * Maneja estados de carga, error y caché.
+ * Siempre llama los hooks en el mismo orden (regla de React).
  */
 export const useInmuebles = () => {
   const context = useContext(InmueblesContext);
-  
-  // Si estamos dentro del Provider, usar el contexto compartido
-  if (context !== null) {
-    return context;
-  }
-  
-  // Fallback: usar estado local (menos eficiente, pero funcional)
+
+  // Fallback state — solo se usa si el componente está fuera del Provider
   const [inmuebles, setInmuebles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Si hay contexto, el Provider ya gestiona los datos — no hacer nada
+    if (context !== null) return;
+
     let isMounted = true;
 
     const loadData = async () => {
@@ -216,7 +211,13 @@ export const useInmuebles = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [context]);
+
+  // Si hay contexto del Provider, usarlo directamente
+  if (context !== null) {
+    return context;
+  }
 
   return { inmuebles, loading, error };
 };

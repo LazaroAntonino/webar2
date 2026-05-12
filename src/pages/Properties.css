@@ -22,6 +22,7 @@
     rgba(28, 46, 81, 0.92) 0%,
     rgba(15, 26, 46, 0.88) 100%
   );
+  pointer-events: none;
 }
 
 .properties-hero__content {
@@ -219,10 +220,12 @@
   white-space: nowrap;
 }
 
-.properties-cta__btn:hover {
-  background: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(250, 180, 34, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .properties-cta__btn:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(250, 180, 34, 0.3);
+  }
 }
 
 /* ================= RESPONSIVE ================= */

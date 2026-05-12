@@ -94,11 +94,13 @@
   transition: all 0.25s ease;
 }
 
-.footer__social a:hover {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--navy);
-  transform: translateY(-3px);
+@media (hover: hover) and (pointer: fine) {
+  .footer__social a:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy);
+    transform: translateY(-3px);
+  }
 }
 
 /* ================= NAV COLUMNS ================= */
@@ -124,16 +126,23 @@
   gap: 14px;
 }
 
-.footer__nav li a {
+.footer__nav li a,
+.footer__nav li button {
   font-size: 14px;
   color: rgba(232, 237, 245, 0.75);
   text-decoration: none;
   transition: all 0.2s ease;
   position: relative;
   padding-left: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
 }
 
-.footer__nav li a::before {
+.footer__nav li a::before,
+.footer__nav li button::before {
   content: "";
   position: absolute;
   left: 0;
@@ -144,11 +153,13 @@
   transition: width 0.25s ease;
 }
 
-.footer__nav li a:hover {
+.footer__nav li a:hover,
+.footer__nav li button:hover {
   color: #fff;
 }
 
-.footer__nav li a:hover::before {
+.footer__nav li a:hover::before,
+.footer__nav li button:hover::before {
   width: 100%;
 }
 
@@ -318,5 +329,10 @@
   .footer__legal {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  /* Espacio extra en iOS para el home indicator */
+  .footer__bottom {
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
   }
 }

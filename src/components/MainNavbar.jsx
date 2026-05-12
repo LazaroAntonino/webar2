@@ -4,7 +4,7 @@ import logoSinFondo from "../img/LogoAR2BlancoSinFondoSinFooter.png";
 import { Phone, List, X } from "phosphor-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
-export const MainNavbar = ({ onHomeClick }) => {
+export const MainNavbar = ({ onHomeClick, alwaysSolid = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -20,6 +20,16 @@ export const MainNavbar = ({ onHomeClick }) => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Bloquear scroll del body cuando el menú móvil está abierto
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   const goHome = () => {
     onHomeClick?.();
     navigate("/");
@@ -27,16 +37,20 @@ export const MainNavbar = ({ onHomeClick }) => {
   };
 
   const scrollTo = (id) => {
-    // Si no estamos en home, navegar a home primero
+    // Si no estamos en home, navegar a home primero y luego scrollear
     if (!isHomePage) {
-      navigate(`/#${id}`);
+      navigate('/');
+      // Pequeño delay para que el componente Home monte antes de scrollear
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      }, 150);
     } else {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     }
     setMenuOpen(false);
   };
 
-  const headerClass = `navbar ${scrolled ? "navbar--solid" : "navbar--transparent"} ${menuOpen ? "navbar--open" : ""}`;
+  const headerClass = `navbar ${(scrolled || alwaysSolid) ? "navbar--solid" : "navbar--transparent"} ${menuOpen ? "navbar--open" : ""}`;
 
   return (
     <header className={headerClass}>
@@ -91,6 +105,9 @@ export const MainNavbar = ({ onHomeClick }) => {
         <button onClick={() => scrollTo("nosotros")}>Nosotros</button>
         <button onClick={() => scrollTo("testimonios")}>Opiniones</button>
         <button onClick={() => scrollTo("contacto")}>Contacto</button>
+        <a href="tel:+34640081599" className="navbar__mobile-phone" onClick={() => setMenuOpen(false)}>
+          📞 +34 640 08 15 99
+        </a>
       </div>
     </header>
   );

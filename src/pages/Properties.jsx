@@ -20,6 +20,17 @@ export const Properties = () => {
     habitaciones: "todas"
   });
 
+  // Sincronizar operación cuando cambia la URL (sin remount del componente)
+  useEffect(() => {
+    const op = searchParams.get("operacion") || "todas";
+    setFiltros(prev => ({
+      ...prev,
+      operacion: op,
+      precioMin: 0,
+      precioMax: Infinity
+    }));
+  }, [searchParams]);
+
   // Obtener inmuebles desde Google Sheets
   const { inmuebles, loading, error, refetch } = useInmuebles();
 
@@ -80,7 +91,7 @@ export const Properties = () => {
 
   // Scroll to top on mount
   useEffect(() => {
-    window.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   return (
@@ -100,10 +111,12 @@ export const Properties = () => {
 
           <h1>Encuentra tu propiedad ideal</h1>
           <p>
-            Explora nuestra selección de {stats.total} inmuebles premium en las mejores ubicaciones de España
+            Explora nuestra selección de inmuebles en las mejores ubicaciones de España
+            {!loading && stats.total > 0 && ` — ${stats.total} disponibles`}
           </p>
 
           {/* Stats rápidos */}
+          {!loading && (
           <div className="properties-hero__stats">
             <div className="stat-item">
               <TrendUp size={20} weight="bold" />
@@ -118,6 +131,7 @@ export const Properties = () => {
               <span><strong>{stats.casas + stats.pisos}</strong> viviendas</span>
             </div>
           </div>
+          )}
         </div>
       </section>
 
@@ -128,6 +142,7 @@ export const Properties = () => {
           <PropertyFilters 
             onFilter={setFiltros}
             totalResultados={inmueblesFiltrados.length}
+            initialOperacion={searchParams.get("operacion") || "todas"}
           />
 
           {/* ESTADOS: Loading / Error / Resultados */}

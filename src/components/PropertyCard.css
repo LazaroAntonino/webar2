@@ -2,7 +2,7 @@
 
 .property-card {
   background: #fff;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid rgba(28, 46, 81, 0.06);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
@@ -11,10 +11,32 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.property-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 30px 60px rgba(28, 46, 81, 0.15);
-  border-color: transparent;
+/* Hover solo en dispositivos con puntero real (no táctiles) */
+@media (hover: hover) and (pointer: fine) {
+  .property-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(28, 46, 81, 0.15);
+    border-color: transparent;
+  }
+
+  .property-card:hover .property-card__image::before {
+    background: linear-gradient(180deg,
+      rgba(28, 46, 81, 0.3) 0%,
+      rgba(28, 46, 81, 0.5) 100%
+    );
+  }
+
+  .property-card:hover .property-card__overlay {
+    opacity: 1;
+  }
+
+  .property-card:hover .property-card__overlay span {
+    transform: translateY(0);
+  }
+
+  .property-card:hover .property-card__title {
+    color: var(--gold);
+  }
 }
 
 /* ================= IMAGE ================= */
@@ -29,6 +51,8 @@
   height: 240px;
   background-size: cover;
   background-position: center;
+  /* Fallback cuando no hay imagen */
+  background-color: var(--neutral-2);
   overflow: hidden;
 }
 
@@ -43,13 +67,6 @@
   );
   z-index: 1;
   transition: all 0.4s ease;
-}
-
-.property-card:hover .property-card__image::before {
-  background: linear-gradient(180deg, 
-    rgba(28, 46, 81, 0.3) 0%,
-    rgba(28, 46, 81, 0.5) 100%
-  );
 }
 
 /* ================= BADGES ================= */
@@ -68,7 +85,7 @@
   display: inline-flex;
   align-items: center;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -87,8 +104,9 @@
 }
 
 .badge--nuevo {
-  background: rgba(76, 175, 80, 0.9);
-  color: #fff;
+  background: #f3ede1;
+  color: var(--navy);
+  border: 1px solid rgba(250, 180, 34, 0.45);
 }
 
 .badge--destacado {
@@ -137,18 +155,10 @@
   color: var(--navy);
   font-weight: 700;
   font-size: 14px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   transform: translateY(10px);
   transition: transform 0.35s ease;
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-}
-
-.property-card:hover .property-card__overlay {
-  opacity: 1;
-}
-
-.property-card:hover .property-card__overlay span {
-  transform: translateY(0);
 }
 
 /* ================= BODY ================= */
@@ -181,10 +191,6 @@
 
 .property-card a {
   text-decoration: none;
-}
-
-.property-card:hover .property-card__title {
-  color: var(--gold);
 }
 
 .property-card__price {
@@ -240,7 +246,7 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--navy);
   color: #fff;
   border: 2px solid var(--navy);
@@ -251,9 +257,11 @@
   text-decoration: none;
 }
 
-.property-card__cta:hover {
-  background: transparent;
-  color: var(--navy);
+@media (hover: hover) and (pointer: fine) {
+  .property-card__cta:hover {
+    background: transparent;
+    color: var(--navy);
+  }
 }
 
 /* ================= FEATURED VARIANT ================= */

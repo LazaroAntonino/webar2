@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./ValuationModal.css";
 import { Bed, Bathtub } from "phosphor-react";
 
-// URL del backend: en producción usa Render, en desarrollo usa localhost
-const API_URL = import.meta.env.PROD ? '' : 'http://localhost:3001';
+// URL del backend: vacío en producción (mismo dominio/proxy), localhost en desarrollo
+const API_URL = '';
 
 // URL del endpoint de Google Apps Script para guardar en Sheets
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxR2ydldxJEvNSmzqsv1mjQgi4vqa-QOmXyk5odayR2kfxgEaLwZFAm3dc_WWntnUPQ/exec'; // <-- Cambia esto por tu URL real
@@ -80,8 +80,6 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         }
     }, [open, step, selectedDate]); // Dependencias: re-ejecutar si alguna de estas cambia
 
-    if (!open) return null; // No renderizar si el modal no está abierto
-
     // --- Lógica de navegación entre pasos ---
     const totalSteps = 8; // Ahora el formulario tiene 9 pasos (0 a 8, donde 8 es confirmación final)
     const nextStep = () => setStep(s => Math.min(s + 1, totalSteps));
@@ -110,8 +108,9 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.details || 'Error al obtener disponibilidad');
+                let errMsg = 'Error al obtener disponibilidad';
+                try { const e = await response.json(); errMsg = e.details || e.error || errMsg; } catch {}
+                throw new Error(errMsg);
             }
             const data = await response.json();
             // console.log("Busy times from backend:", data.busyTimes); // Para depuración
@@ -162,6 +161,15 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         }
         return slots;
     };
+
+    // Slots memoizados — evita recalcular 5 veces por render en el paso 6
+    const timeSlots = useMemo(
+        () => generateTimeSlots(selectedDate),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [selectedDate, busySlots]
+    );
+
+    if (!open) return null; // No renderizar si el modal no está abierto
 
     /* ================= VALIDACIONES ================= */
     
@@ -264,8 +272,9 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                     }),
                 });
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.details || 'Error desconocido al crear la cita en Google Calendar');
+                    let errMsg = 'Error desconocido al crear la cita en Google Calendar';
+                    try { const e = await response.json(); errMsg = e.details || e.error || errMsg; } catch {}
+                    throw new Error(errMsg);
                 }
                 calendarOk = true;
             } catch (err) {
@@ -367,10 +376,11 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                             <p className="modal-subtitle">Código postal</p>
                             <input
                                 type="text"
+                                inputMode="numeric"
                                 maxLength="5"
                                 placeholder="Ej. 28001"
                                 value={form.cp}
-                                onChange={(e) => setForm(f => ({ ...f, cp: e.target.value }))}
+                                onChange={(e) => setForm(f => ({ ...f, cp: e.target.value.replace(/\D/g, '') }))}
                             />
                         </>
                     )}
@@ -403,6 +413,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                                     <div className="input-with-icon">
                                         <input
                                             type="number"
+                                            inputMode="numeric"
                                             min="0"
                                             placeholder="0"
                                             value={form.habitaciones}
@@ -416,6 +427,7 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                                     <div className="input-with-icon">
                                         <input
                                             type="number"
+                                            inputMode="numeric"
                                             min="0"
                                             placeholder="0"
                                             value={form.banos}
@@ -437,6 +449,8 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                             <div className="input-group">
                                 <input
                                     type="email"
+                                    inputMode="email"
+                                    autoComplete="email"
                                     placeholder="Email"
                                     value={form.email}
                                     className={errors.email ? 'input-error' : ''}
@@ -452,6 +466,8 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                             <div className="input-group">
                                 <input
                                     type="tel"
+                                    inputMode="tel"
+                                    autoComplete="tel"
                                     placeholder="Teléfono"
                                     value={form.telefono}
                                     className={errors.telefono ? 'input-error' : ''}
@@ -541,14 +557,14 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                                 </div>
                             ) : (
                                 <div className="time-section">
-                                    {generateTimeSlots(selectedDate).length > 0 ? (
+                                    {timeSlots.length > 0 ? (
                                         <>
                                             {/* Mañana */}
-                                            {generateTimeSlots(selectedDate).filter(slot => slot.getHours() < 14).length > 0 && (
+                                            {timeSlots.filter(slot => slot.getHours() < 14).length > 0 && (
                                                 <div className="time-group">
                                                     <span className="time-group-label">☀️ Mañana</span>
                                                     <div className="time-slots-grid">
-                                                        {generateTimeSlots(selectedDate)
+                                                        {timeSlots
                                                             .filter(slot => slot.getHours() < 14)
                                                             .map((slot, index) => (
                                                                 <button
@@ -564,11 +580,11 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                                             )}
                                             
                                             {/* Tarde */}
-                                            {generateTimeSlots(selectedDate).filter(slot => slot.getHours() >= 14).length > 0 && (
+                                            {timeSlots.filter(slot => slot.getHours() >= 14).length > 0 && (
                                                 <div className="time-group">
                                                     <span className="time-group-label">🌙 Tarde</span>
                                                     <div className="time-slots-grid">
-                                                        {generateTimeSlots(selectedDate)
+                                                        {timeSlots
                                                             .filter(slot => slot.getHours() >= 14)
                                                             .map((slot, index) => (
                                                                 <button

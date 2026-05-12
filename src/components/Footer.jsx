@@ -1,11 +1,24 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Phone, EnvelopeSimple, MapPin, InstagramLogo, LinkedinLogo, FacebookLogo } from "phosphor-react";
 import logoBlanco from "../img/LogoAR2BlancoSinFondoSinFooter.png";
 import "./Footer.css";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollTo = (id) => {
+    if (location.pathname === '/') {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      }, 180);
+    }
+  };
 
   return (
     <footer className="footer">
@@ -48,10 +61,10 @@ export const Footer = () => {
           <div className="footer__nav">
             <h4>Servicios</h4>
             <ul>
-              <li><a href="/#nosotros">Sobre nosotros</a></li>
-              <li><a href="/#testimonios">Opiniones</a></li>
+              <li><button onClick={() => scrollTo('nosotros')}>Sobre nosotros</button></li>
+              <li><button onClick={() => scrollTo('testimonios')}>Opiniones</button></li>
               <li><Link to="/">Valoración gratuita</Link></li>
-              <li><a href="/#contacto">Contacto</a></li>
+              <li><button onClick={() => scrollTo('contacto')}>Contacto</button></li>
             </ul>
           </div>
 

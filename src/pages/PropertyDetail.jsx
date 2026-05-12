@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useParams, Link } from "react-router-dom";
 import { MainNavbar } from "../components/MainNavbar";
 import { Footer } from "../components/Footer";
 import { PropertyCard } from "../components/PropertyCard";
@@ -7,6 +7,7 @@ import {
   CaretLeft,
   CaretRight,
   MapPin,
+  Phone,
   Bed,
   Bathtub,
   Ruler,
@@ -16,14 +17,10 @@ import {
   Snowflake,
   Sun,
   Calendar,
-  Phone,
   EnvelopeSimple,
-  Share,
-  House,
   Buildings,
   Package,
   ArrowsOut,
-  Check,
   NavigationArrow,
   X
 } from "phosphor-react";
@@ -32,19 +29,20 @@ import "./PropertyDetail.css";
 
 export const PropertyDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [formSent, setFormSent] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showBottomBar, setShowBottomBar] = useState(false);
 
-  // Refs para el swipe
-  const galleryRef = useRef(null);
-  const lightboxRef = useRef(null);
+  // Refs
+  const carouselRef = useRef(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
-  const isDragging = useRef(false);
-  const hasSwiped = useRef(false);
+  // Refs estables para las funciones de navegación (evita stale closure en useEffect)
+  const nextImageRef = useRef(null);
+  const prevImageRef = useRef(null);
 
   // Obtener inmuebles desde Google Sheets
   const { inmuebles, loading, error, refetch } = useInmuebles();
@@ -53,6 +51,18 @@ export const PropertyDetail = () => {
   const inmueble = useMemo(() => {
     return inmuebles.find(item => item.id === id);
   }, [id, inmuebles]);
+
+  // Imágenes del inmueble actual (array vacío si no existe aún)
+  const imagenes = inmueble?.imagenes ?? [];
+  const imageCount = imagenes.length;
+
+  // Navegación de imágenes — definidas aquí para que los useEffects/handlers puedan usarlas
+  const nextImage = () => setCurrentImage((prev) => (prev + 1) % (imageCount || 1));
+  const prevImage = () => setCurrentImage((prev) => (prev - 1 + (imageCount || 1)) % (imageCount || 1));
+
+  // Mantener refs siempre actualizadas (evita stale closures)
+  nextImageRef.current = nextImage;
+  prevImageRef.current = prevImage;
 
   // Inmuebles relacionados (misma ciudad o tipo)
   const relacionados = useMemo(() => {
@@ -67,11 +77,60 @@ export const PropertyDetail = () => {
 
   // Reset imagen y scroll cuando cambia el inmueble
   useEffect(() => {
-    window.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0, behavior: 'instant' });
     setCurrentImage(0); // Resetear al cambiar de inmueble
     setShowContactForm(false); // También cerrar el formulario de contacto
     setShowLightbox(false); // Cerrar lightbox si está abierto
+    setFormSent(false); // Resetear estado de formulario enviado
+    setShowBottomBar(false); // Resetear barra inferior
   }, [id]);
+
+  // Reset scroll del carrusel al cambiar de inmueble
+  useEffect(() => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({ left: 0, behavior: 'instant' });
+    }
+    setCurrentSlide(0);
+  }, [id]);
+
+  // IntersectionObserver para trackear qué slide está visible
+  useEffect(() => {
+    if (!carouselRef.current) return;
+    const slides = carouselRef.current.querySelectorAll('.gallery-slide');
+    if (!slides.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            const idx = Number(entry.target.dataset.index);
+            if (!Number.isNaN(idx)) setCurrentSlide(idx);
+          }
+        });
+      },
+      { root: carouselRef.current, threshold: [0.6, 0.9] }
+    );
+
+    slides.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, [inmueble?.id]);
+
+  // IntersectionObserver para mostrar la bottom-bar cuando property-intro sale del viewport
+  useEffect(() => {
+    const intro = document.querySelector('.property-intro');
+    if (!intro) return;
+
+    // Resetear la barra al volver a montar
+    setShowBottomBar(false);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowBottomBar(!entry.isIntersecting),
+      { threshold: 0, rootMargin: '-80px 0px 0px 0px' }
+    );
+
+    observer.observe(intro);
+    return () => observer.disconnect();
+  }, [inmueble?.id]);
 
   // Bloquear scroll del body cuando el lightbox está abierto
   useEffect(() => {
@@ -85,112 +144,50 @@ export const PropertyDetail = () => {
     };
   }, [showLightbox]);
 
-  // Cerrar lightbox con tecla Escape
+  // Cerrar lightbox con tecla Escape — usa refs para evitar stale closure
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!showLightbox) return;
       if (e.key === 'Escape') {
         setShowLightbox(false);
       } else if (e.key === 'ArrowRight') {
-        nextImage();
+        nextImageRef.current?.();
       } else if (e.key === 'ArrowLeft') {
-        prevImage();
+        prevImageRef.current?.();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showLightbox]);
 
-  // Funciones de swipe
+  // Funciones de swipe (solo touch — para el lightbox en móvil)
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
     touchEndX.current = e.touches[0].clientX;
-    isDragging.current = true;
-    hasSwiped.current = false;
   };
 
   const handleTouchMove = (e) => {
-    if (!isDragging.current) return;
     touchEndX.current = e.touches[0].clientX;
   };
 
   const handleTouchEnd = () => {
-    if (!isDragging.current) return;
-    isDragging.current = false;
-    
     const swipeDistance = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50;
-
-    // Solo cambiar imagen si realmente hubo un swipe (movimiento significativo)
     if (Math.abs(swipeDistance) > minSwipeDistance) {
-      hasSwiped.current = true;
-      if (swipeDistance > 0) {
-        nextImage();
-      } else {
-        prevImage();
-      }
+      if (swipeDistance > 0) nextImage();
+      else prevImage();
     }
-    
     touchStartX.current = 0;
     touchEndX.current = 0;
   };
 
-  // Mouse drag para desktop
-  const handleMouseDown = (e) => {
-    touchStartX.current = e.clientX;
-    touchEndX.current = e.clientX;
-    isDragging.current = true;
-    hasSwiped.current = false;
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-    touchEndX.current = e.clientX;
-  };
-
-  const handleMouseUp = () => {
-    if (!isDragging.current) return;
-    isDragging.current = false;
-    
-    const swipeDistance = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 50;
-
-    // Solo cambiar imagen si realmente hubo un swipe (movimiento significativo)
-    // Si el usuario solo hizo click sin mover, no hacer nada aquí
-    if (Math.abs(swipeDistance) > minSwipeDistance) {
-      hasSwiped.current = true;
-      if (swipeDistance > 0) {
-        nextImage();
-      } else {
-        prevImage();
-      }
-    }
-    
-    touchStartX.current = 0;
-    touchEndX.current = 0;
-  };
-
-  // Abrir lightbox (solo si no hubo swipe)
-  const openLightbox = () => {
-    // Pequeño delay para asegurar que hasSwiped se actualizó
-    setTimeout(() => {
-      if (!hasSwiped.current) {
-        setShowLightbox(true);
-      }
-      hasSwiped.current = false;
-    }, 10);
-  };
-
-  // Cerrar lightbox
-  const closeLightbox = () => {
-    setShowLightbox(false);
-  };
+  const closeLightbox = () => setShowLightbox(false);
 
   // Estado de carga
   if (loading) {
     return (
       <div className="property-detail-page">
-        <MainNavbar />
+        <MainNavbar alwaysSolid />
         <div style={{ paddingTop: 'var(--navbar-height)', minHeight: '60vh' }}>
           <LoadingSpinner />
         </div>
@@ -203,7 +200,7 @@ export const PropertyDetail = () => {
   if (error) {
     return (
       <div className="property-detail-page">
-        <MainNavbar />
+        <MainNavbar alwaysSolid />
         <div style={{ paddingTop: 'var(--navbar-height)', minHeight: '60vh' }}>
           <ErrorMessage message={error} onRetry={refetch} />
         </div>
@@ -216,7 +213,7 @@ export const PropertyDetail = () => {
   if (!inmueble) {
     return (
       <div className="property-detail-page">
-        <MainNavbar />
+        <MainNavbar alwaysSolid />
         <div className="not-found">
           <div className="not-found__content">
             <span className="not-found__icon">🏠</span>
@@ -243,8 +240,6 @@ export const PropertyDetail = () => {
     destacado,
     nuevo,
     descripcion,
-    descripcionCorta,
-    imagenes,
     fechaPublicacion,
     agente
   } = inmueble;
@@ -256,41 +251,16 @@ export const PropertyDetail = () => {
     return `${formatted} €`;
   };
 
-  // Formatear fecha
+  // Formatear fecha — guard para strings vacíos o fechas inválidas
   const formatFecha = (fecha) => {
-    return new Date(fecha).toLocaleDateString('es-ES', {
+    if (!fecha) return null;
+    const d = new Date(fecha);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString('es-ES', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     });
-  };
-
-  // Navegación de imágenes
-  const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % imagenes.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + imagenes.length) % imagenes.length);
-  };
-
-  // Compartir - copiar URL al portapapeles
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      // Fallback para navegadores que no soportan clipboard API
-      const textArea = document.createElement('textarea');
-      textArea.value = window.location.href;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
   };
 
   // Abrir ubicación en Google Maps
@@ -319,7 +289,9 @@ export const PropertyDetail = () => {
       `Enlace al inmueble: ${window.location.href}`
     );
     
-    window.location.href = `mailto:${agente.email}?subject=${subject}&body=${body}`;
+    const recipientEmail = agente.email || 'info@ar2house.com';
+    window.location.href = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+    setFormSent(true);
   };
 
   // Características para mostrar
@@ -340,7 +312,7 @@ export const PropertyDetail = () => {
 
   return (
     <div className="property-detail-page">
-      <MainNavbar />
+      <MainNavbar alwaysSolid />
 
       {/* LIGHTBOX / MODAL FULLSCREEN */}
       {showLightbox && (
@@ -351,14 +323,9 @@ export const PropertyDetail = () => {
           <div 
             className="lightbox-container"
             onClick={(e) => e.stopPropagation()}
-            ref={lightboxRef}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
           >
             {/* Botón cerrar */}
             <button className="lightbox-close" onClick={closeLightbox}>
@@ -401,7 +368,7 @@ export const PropertyDetail = () => {
                   className={`lightbox-thumb ${idx === currentImage ? 'active' : ''}`}
                   onClick={(e) => { e.stopPropagation(); setCurrentImage(idx); }}
                 >
-                  <img src={img} alt={`Miniatura ${idx + 1}`} draggable="false" />
+                  <img src={img} alt={`Miniatura ${idx + 1}`} draggable="false" loading="lazy" decoding="async" />
                 </button>
               ))}
             </div>
@@ -414,80 +381,112 @@ export const PropertyDetail = () => {
         </div>
       )}
 
-      {/* GALERÍA */}
-      <section className="property-gallery">
-        <div 
-          className="property-gallery__main"
-          ref={galleryRef}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          <img 
-            src={imagenes[currentImage]} 
-            alt={`${titulo} - Imagen ${currentImage + 1}`}
-            onClick={openLightbox}
-            className="gallery-main-image"
-            draggable="false"
-          />
-          
-          {/* Navegación */}
-          <button className="gallery-nav gallery-nav--prev" onClick={(e) => { e.stopPropagation(); prevImage(); }}>
-            <CaretLeft size={24} weight="bold" />
-          </button>
-          <button className="gallery-nav gallery-nav--next" onClick={(e) => { e.stopPropagation(); nextImage(); }}>
-            <CaretRight size={24} weight="bold" />
-          </button>
+      {/* INTRO EDITORIAL */}
+      <section className="property-intro">
+        <div className="container">
+          <nav className="breadcrumb breadcrumb--intro" aria-label="Ruta de navegación">
+            <Link to="/">Inicio</Link>
+            <CaretRight size={12} />
+            <Link to="/inmuebles">Inmuebles</Link>
+            <CaretRight size={12} />
+            <span>{titulo}</span>
+          </nav>
 
-          {/* Contador */}
-          <div className="gallery-counter">
-            {currentImage + 1} / {imagenes.length}
-          </div>
-
-          {/* Badges */}
-          <div className="gallery-badges">
-            <span className={`badge ${operacion === 'venta' ? 'badge--venta' : 'badge--alquiler'}`}>
-              {operacion === 'venta' ? 'En venta' : 'En alquiler'}
+          <p className="property-eyebrow">
+            <span className="property-eyebrow__line" aria-hidden="true" />
+            <span className="property-eyebrow__text">
+              {tipo === 'casa' ? 'Casa' : tipo === 'piso' ? 'Piso' : 'Local'} en {operacion}
             </span>
-            {nuevo && <span className="badge badge--nuevo">Nuevo</span>}
-            {destacado && <span className="badge badge--destacado">Destacado</span>}
-          </div>
+            <span className="property-eyebrow__line property-eyebrow__line--right" aria-hidden="true" />
+          </p>
 
-          {/* Acción compartir */}
-          <div className="gallery-actions">
-            <button 
-              className={`gallery-action ${copied ? 'gallery-action--copied' : ''}`} 
-              title={copied ? "¡Enlace copiado!" : "Compartir enlace"}
-              onClick={(e) => { e.stopPropagation(); handleShare(); }}
-            >
-              {copied ? <Check size={20} weight="bold" /> : <Share size={20} />}
-            </button>
-          </div>
+          <h1 className="property-headline">{titulo}</h1>
 
-          {/* Indicador de expandir */}
-          <div className="gallery-expand-hint" onClick={openLightbox}>
-            <ArrowsOut size={18} weight="bold" />
-            <span>Ver en grande</span>
+          <p className="property-sublocation">
+            <MapPin size={14} weight="duotone" />
+            <span>{ubicacion.barrio} · {ubicacion.ciudad}</span>
+          </p>
+
+          <div className="property-price-hero">
+            <span className="property-price-hero__amount">
+              {formatPrecio(precio, precioTipo)}
+            </span>
           </div>
         </div>
+      </section>
 
-        {/* Thumbnails */}
-        <div className="property-gallery__thumbs">
+      {/* GALERÍA */}
+      {imagenes.length > 0 && (
+      <section className="property-gallery">
+        <div
+          className="property-gallery__carousel"
+          ref={carouselRef}
+          aria-label="Galería de fotografías"
+        >
           {imagenes.map((img, idx) => (
-            <button 
+            <button
               key={idx}
-              className={`thumb ${idx === currentImage ? 'active' : ''}`}
-              onClick={() => setCurrentImage(idx)}
+              type="button"
+              className="gallery-slide"
+              data-index={idx}
+              onClick={() => { setCurrentImage(idx); setShowLightbox(true); }}
+              aria-label={`Abrir fotografía ${idx + 1} de ${imagenes.length} a pantalla completa`}
             >
-              <img src={img} alt={`Miniatura ${idx + 1}`} />
+              <img
+                src={img}
+                alt={`${titulo} - Fotografía ${idx + 1}`}
+                loading={idx === 0 ? 'eager' : 'lazy'}
+                decoding={idx === 0 ? 'sync' : 'async'}
+                draggable="false"
+              />
+              {idx === 0 && (
+                <div className="gallery-badges">
+                  <span className={`badge ${operacion === 'venta' ? 'badge--venta' : 'badge--alquiler'}`}>
+                    {operacion === 'venta' ? 'En venta' : 'En alquiler'}
+                  </span>
+                  {nuevo && <span className="badge badge--nuevo">Nuevo</span>}
+                  {destacado && <span className="badge badge--destacado">Destacado</span>}
+                </div>
+              )}
             </button>
           ))}
         </div>
+
+        {/* Counter — siempre visible */}
+        <div className="gallery-counter" aria-live="polite">
+          <span className="gallery-counter__current">{currentSlide + 1}</span>
+          <span className="gallery-counter__sep">/</span>
+          <span className="gallery-counter__total">{imagenes.length}</span>
+        </div>
+
+        {/* Dots — solo si N ≤ 7 */}
+        {imagenes.length <= 7 && (
+          <div className="gallery-dots" role="tablist" aria-label="Indicadores de fotografía">
+            {imagenes.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                role="tab"
+                aria-selected={idx === currentSlide}
+                aria-label={`Ir a la fotografía ${idx + 1}`}
+                className={`gallery-dot ${idx === currentSlide ? 'is-active' : ''}`}
+                onClick={() => {
+                  if (!carouselRef.current) return;
+                  const slideWidth = carouselRef.current.offsetWidth;
+                  carouselRef.current.scrollTo({ left: idx * slideWidth, behavior: 'smooth' });
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Botón "Ver galería" — solo escritorio */}
+        <button className="gallery-view-all" onClick={() => setShowLightbox(true)}>
+          <ArrowsOut size={16} weight="bold" />
+          <span>Ver galería completa</span>
+        </button>
       </section>
+      )}
 
       {/* CONTENIDO PRINCIPAL */}
       <section className="property-content">
@@ -495,33 +494,6 @@ export const PropertyDetail = () => {
           <div className="property-layout">
             {/* COLUMNA PRINCIPAL */}
             <div className="property-main">
-              {/* Breadcrumb */}
-              <nav className="breadcrumb">
-                <Link to="/">Inicio</Link>
-                <CaretRight size={14} />
-                <Link to="/inmuebles">Inmuebles</Link>
-                <CaretRight size={14} />
-                <span>{titulo}</span>
-              </nav>
-
-              {/* Header */}
-              <header className="property-header">
-                <div className="property-header__type">
-                  {tipo === 'casa' ? <House size={18} /> : tipo === 'piso' ? <Buildings size={18} /> : <Package size={18} />}
-                  <span>{tipo === 'casa' ? 'Casa' : tipo === 'piso' ? 'Piso' : 'Local'} en {operacion}</span>
-                </div>
-                <h1>{titulo}</h1>
-                <div className="property-header__location">
-                  <MapPin size={18} weight="bold" />
-                  <span>{ubicacion.direccion}, {ubicacion.barrio}, {ubicacion.ciudad}</span>
-                </div>
-              </header>
-
-              {/* Precio móvil */}
-              <div className="property-price-mobile">
-                <span className="property-price">{formatPrecio(precio, precioTipo)}</span>
-              </div>
-
               {/* Stats rápidos */}
               <div className="property-quick-stats">
                 {caracteristicas.habitaciones > 0 && (
@@ -609,10 +581,12 @@ export const PropertyDetail = () => {
               </div>
 
               {/* Fecha publicación */}
-              <div className="property-meta">
-                <Calendar size={16} />
-                <span>Publicado el {formatFecha(fechaPublicacion)}</span>
-              </div>
+              {formatFecha(fechaPublicacion) && (
+                <div className="property-meta">
+                  <Calendar size={16} />
+                  <span>Publicado el {formatFecha(fechaPublicacion)}</span>
+                </div>
+              )}
             </div>
 
             {/* SIDEBAR */}
@@ -624,36 +598,90 @@ export const PropertyDetail = () => {
                 </div>
 
                 <div className="contact-card__agent">
-                  <div className="agent-avatar">
-                    {agente.nombre.charAt(0)}
+                  {agente.foto ? (
+                    <img
+                      src={agente.foto}
+                      alt={agente.nombre}
+                      className="agent-photo"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextElementSibling;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className="agent-photo agent-photo--initial"
+                    style={{ display: agente.foto ? 'none' : 'flex' }}
+                    aria-hidden={!!agente.foto}
+                  >
+                    {agente.nombre ? agente.nombre.charAt(0).toUpperCase() : 'A'}
                   </div>
                   <div className="agent-info">
+                    <span className="agent-eyebrow">Asesor asignado</span>
                     <span className="agent-name">{agente.nombre}</span>
-                    <span className="agent-role">Asesor inmobiliario</span>
+                    <span className="agent-meta">{agente.idiomas || 'ES · EN'}</span>
                   </div>
                 </div>
 
                 <div className="contact-card__actions">
-                  <a href={`tel:${agente.telefono}`} className="contact-btn contact-btn--primary">
-                    <Phone size={18} weight="bold" />
-                    <span>Llamar ahora</span>
-                  </a>
-                  <a href={`mailto:${agente.email}?subject=Consulta: ${titulo}`} className="contact-btn contact-btn--secondary">
-                    <EnvelopeSimple size={18} weight="bold" />
-                    <span>Enviar email</span>
-                  </a>
+                  {agente.telefono ? (
+                    <a href={`tel:${agente.telefono}`} className="contact-btn contact-btn--primary">
+                      <Phone size={18} weight="bold" />
+                      <span>Agendar visita privada</span>
+                    </a>
+                  ) : (
+                    <a href="tel:+34640081599" className="contact-btn contact-btn--primary">
+                      <Phone size={18} weight="bold" />
+                      <span>Agendar visita privada</span>
+                    </a>
+                  )}
+                  {agente.email ? (
+                    <a href={`mailto:${agente.email}?subject=Solicitud de dossier: ${titulo}`} className="contact-btn contact-btn--secondary">
+                      <EnvelopeSimple size={18} weight="bold" />
+                      <span>Solicitar dossier completo</span>
+                    </a>
+                  ) : (
+                    <a href="mailto:info@ar2.es?subject=Solicitud de dossier" className="contact-btn contact-btn--secondary">
+                      <EnvelopeSimple size={18} weight="bold" />
+                      <span>Solicitar dossier completo</span>
+                    </a>
+                  )}
+                  <button
+                    className="contact-btn contact-btn--outline"
+                    onClick={() => setShowContactForm(v => !v)}
+                  >
+                    {showContactForm ? 'Cerrar formulario' : 'Enviar mensaje directo'}
+                  </button>
                 </div>
 
                 {showContactForm && (
-                  <form className="contact-form" onSubmit={handleContactSubmit}>
-                    <input type="text" name="nombre" placeholder="Tu nombre" required />
-                    <input type="email" name="email" placeholder="Tu email" required />
-                    <input type="tel" name="telefono" placeholder="Tu teléfono (opcional)" />
-                    <textarea name="mensaje" placeholder="Me interesa este inmueble..." rows={3} required></textarea>
-                    <button type="submit" className="contact-form__submit">
-                      Enviar consulta por email
-                    </button>
-                  </form>
+                  formSent ? (
+                    <div className="contact-form-success">
+                      <span className="contact-form-success__icon">✓</span>
+                      <p className="contact-form-success__msg">
+                        Se ha abierto tu cliente de correo. Si no se abrió, escríbenos a{' '}
+                        <a href={`mailto:${agente.email || 'info@ar2house.com'}`}>{agente.email || 'info@ar2house.com'}</a>
+                      </p>
+                      <button
+                        className="contact-form-success__reset"
+                        onClick={() => setFormSent(false)}
+                      >
+                        Enviar otro mensaje
+                      </button>
+                    </div>
+                  ) : (
+                    <form className="contact-form" onSubmit={handleContactSubmit}>
+                      <input type="text" name="nombre" placeholder="Tu nombre" required />
+                      <input type="email" name="email" placeholder="Tu email" required />
+                      <input type="tel" name="telefono" placeholder="Tu teléfono (opcional)" />
+                      <textarea name="mensaje" placeholder="Me interesa este inmueble..." rows={3} required></textarea>
+                      <button type="submit" className="contact-form__submit">
+                        Enviar consulta por email
+                      </button>
+                    </form>
+                  )
                 )}
               </div>
             </aside>
@@ -679,6 +707,29 @@ export const PropertyDetail = () => {
             </div>
           </div>
         </section>
+      )}
+
+      {!showLightbox && (
+        <div
+          className={`property-bottom-bar ${showBottomBar ? 'is-visible' : ''}`}
+          role="region"
+          aria-label="Precio y contacto"
+        >
+          <div className="property-bottom-bar__price">
+            <span className="property-bottom-bar__label">Desde</span>
+            <span className="property-bottom-bar__value">
+              {formatPrecio(precio, precioTipo)}
+            </span>
+          </div>
+          <a
+            href={agente.telefono ? `tel:${agente.telefono}` : 'tel:+34640081599'}
+            className="property-bottom-bar__cta"
+            aria-label="Llamar al asesor para agendar visita"
+          >
+            <Phone size={16} weight="bold" />
+            <span>Agendar visita</span>
+          </a>
+        </div>
       )}
 
       <Footer />

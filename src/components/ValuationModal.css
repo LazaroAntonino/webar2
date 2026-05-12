@@ -11,6 +11,9 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
+    /* Respetar áreas seguras de iOS */
+    padding-top: max(20px, env(safe-area-inset-top, 20px));
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
 }
 
 /* ================= MODAL ================= */
@@ -63,10 +66,10 @@
 .close-btn {
     background: none;
     border: none;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1;
     cursor: pointer;
     color: var(--navy);
@@ -75,6 +78,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Margen negativo para no desplazar el layout */
+    margin: -6px -6px 0 0;
 }
 
 .close-btn:hover {
@@ -227,7 +232,7 @@
 
     border: 2px solid #eef1f5;
     background: #f8f9fb;
-    font-size: 15px;
+    font-size: 16px; /* ≥16px evita zoom automático en iOS Safari */
 
     outline: none;
     transition: all 0.2s ease;
@@ -373,13 +378,15 @@
     transition: all 0.2s ease;
 }
 
-.modal-cta:hover:not(:disabled) {
-    background: #1a3259;
-    transform: translateY(-1px);
-}
-
 .modal-cta:active:not(:disabled) {
     transform: translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .modal-cta:hover:not(:disabled) {
+        background: #1a3259;
+        transform: translateY(-1px);
+    }
 }
 
 .modal-cta:disabled {
@@ -547,9 +554,11 @@
     text-align: center;
 }
 
-.time-slot:hover {
-    background: #eef1f5;
-    transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+    .time-slot:hover {
+        background: #eef1f5;
+        transform: translateY(-1px);
+    }
 }
 
 .time-slot.active {

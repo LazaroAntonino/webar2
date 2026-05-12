@@ -30,35 +30,42 @@ const rangosPrecios = {
   ]
 };
 
-export const PropertyFilters = ({ onFilter, totalResultados, filtrosActivos }) => {
+export const PropertyFilters = ({ onFilter, totalResultados, filtrosActivos, initialOperacion = "todas" }) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [busqueda, setBusqueda] = useState("");
-  const [operacion, setOperacion] = useState("todas");
+  const [operacion, setOperacion] = useState(initialOperacion);
   const [tipo, setTipo] = useState("todos");
   const [ciudad, setCiudad] = useState("Todas");
   const [rangoPrecio, setRangoPrecio] = useState(0);
   const [habitaciones, setHabitaciones] = useState("todas");
-  
-  // Aplicar filtros
-  const aplicarFiltros = () => {
-    const rangoActual = operacion === 'alquiler' 
-      ? rangosPrecios.alquiler[rangoPrecio] 
+
+  // Sincronizar cuando el prop cambia (navegación por URL sin remount)
+  useEffect(() => {
+    setOperacion(initialOperacion);
+    setRangoPrecio(0);
+  }, [initialOperacion]);
+
+  // Resetear rango de precio al cambiar la operación (evita índice incorrecto)
+  useEffect(() => {
+    setRangoPrecio(0);
+  }, [operacion]);
+
+  // Aplicar filtros cuando cualquier valor cambia — inline para evitar stale closure
+  useEffect(() => {
+    const rangoActual = operacion === 'alquiler'
+      ? rangosPrecios.alquiler[rangoPrecio]
       : rangosPrecios.venta[rangoPrecio];
-    
+
     onFilter({
       busqueda,
       operacion,
       tipo,
       ciudad,
-      precioMin: rangoActual?.min || 0,
-      precioMax: rangoActual?.max || Infinity,
+      precioMin: rangoActual?.min ?? 0,
+      precioMax: rangoActual?.max ?? Infinity,
       habitaciones
     });
-  };
-
-  // Aplicar filtros cuando cambian
-  useEffect(() => {
-    aplicarFiltros();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [busqueda, operacion, tipo, ciudad, rangoPrecio, habitaciones]);
 
   // Reset filtros
