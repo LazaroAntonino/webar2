@@ -15,8 +15,17 @@ export default defineConfig({
         // Restringir acceso del servidor solo a carpetas permitidas
         fs: {
             strict: true,
-            allow: ['./src', './node_modules', './public', '.'],
-            deny: ['.git', '.env', '.env.*', '**/node_modules/.vite/**']
+            allow: ['./src', './node_modules', './public', './index.html'],
+            deny: [
+                '**/.git/**',
+                '**/.env',
+                '**/.env.*',
+                '**/node_modules/.vite/**',
+                '**/*.{crt,pem,key}'
+            ]
+        },
+        hmr: {
+            overlay: false
         }
     },
     build: {
