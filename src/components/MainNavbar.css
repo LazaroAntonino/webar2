@@ -127,7 +127,7 @@
   top: var(--navbar-height);
   left: 0;
   width: 100%;
-  background: rgba(0,0,0,0.22);
+  background: rgba(28, 46, 81, 0.97);
   backdrop-filter: blur(10px);
   padding: 0 0 12px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
