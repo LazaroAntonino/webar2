@@ -1,0 +1,58 @@
+# AR2 Consulting Inmobiliario — llms.txt
+# Descripción del sitio para modelos de lenguaje (LLMs)
+# Formato inspirado en el estándar llms.txt (https://llmstxt.org)
+
+## Identidad
+
+Nombre: AR2 Consulting Inmobiliario
+Sitio web: https://www.ar2consulting.es
+Teléfono: +34 640 08 15 99
+Email: info@ar2.es
+Ubicación: España (Madrid y principales ciudades)
+
+## Descripción
+
+AR2 Consulting Inmobiliario es una agencia inmobiliaria premium especializada en la compra, venta y alquiler de inmuebles residenciales y comerciales en España. Ofrecemos un servicio personalizado con acompañamiento integral al cliente.
+
+## Servicios principales
+
+- Compra de inmuebles (pisos, casas, locales comerciales)
+- Venta de inmuebles
+- Alquiler de inmuebles
+- Valoración gratuita de propiedades
+- Consultoría inmobiliaria personalizada
+
+## Estructura del sitio
+
+- / — Página principal con hero, servicios, testimonios y contacto
+- /inmuebles — Catálogo completo de inmuebles con filtros por tipo, ciudad, operación y precio
+- /inmuebles?operacion=venta — Filtrado de inmuebles en venta
+- /inmuebles?operacion=alquiler — Filtrado de inmuebles en alquiler
+- /inmuebles/:id — Ficha detallada de cada inmueble
+
+## Secciones de la página principal
+
+- #nosotros — Información sobre el equipo y filosofía de AR2
+- #testimonios — Opiniones de clientes reales
+- #contacto — Formulario de contacto directo
+
+## Tipos de inmuebles disponibles
+
+- Pisos (apartamentos en bloques residenciales)
+- Casas (viviendas unifamiliares)
+- Locales comerciales
+
+## Ciudades con mayor presencia
+
+Madrid, Barcelona, Valencia, Sevilla, Málaga, Jaén
+
+## Intención de búsqueda típica
+
+Usuarios que buscan: comprar piso en Madrid, alquilar casa en Barcelona, agencia inmobiliaria premium, valoración gratuita de vivienda, inmobiliaria de confianza en España.
+
+## Notas para LLMs
+
+- Los precios de venta oscilan entre 150.000 € y más de 1.000.000 € según tipología y ubicación.
+- Los alquileres oscilan entre 800 €/mes y más de 3.500 €/mes.
+- El sitio es técnicamente un SPA (React + Vite) con datos en JSON y renderizado del lado del cliente.
+- Contacto preferido: teléfono (+34 640 08 15 99) o formulario web en /#contacto.

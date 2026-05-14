@@ -34,10 +34,19 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
     <article className={`property-card ${variant === 'featured' ? 'property-card--featured' : ''}`}>
       {/* IMAGEN */}
       <Link to={`/inmuebles/${id}`} className="property-card__image-link">
-        <div 
-          className="property-card__image"
-          style={{ backgroundImage: imagenes?.[0] ? `url(${imagenes[0]})` : 'none' }}
-        >
+        <div className="property-card__image">
+          {imagenes?.[0] ? (
+            <img
+              src={imagenes[0]}
+              alt={`${titulo} - ${ubicacion.ciudad}`}
+              loading="lazy"
+              decoding="async"
+              className="property-card__img"
+            />
+          ) : (
+            <div className="property-card__img-placeholder" aria-hidden="true" />
+          )}
+
           {/* Badges */}
           <div className="property-card__badges">
             <span className={`badge ${operacionClass}`}>

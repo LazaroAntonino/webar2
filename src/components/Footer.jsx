@@ -60,10 +60,10 @@ export const Footer = () => {
           <div className="footer__nav">
             <h4>Servicios</h4>
             <ul>
-              <li><button onClick={() => scrollTo('nosotros')}>Sobre nosotros</button></li>
-              <li><button onClick={() => scrollTo('testimonios')}>Opiniones</button></li>
+              <li><a href="/#nosotros" onClick={(e) => { e.preventDefault(); scrollTo('nosotros'); }}>Sobre nosotros</a></li>
+              <li><a href="/#testimonios" onClick={(e) => { e.preventDefault(); scrollTo('testimonios'); }}>Opiniones</a></li>
               <li><Link to="/">Valoración gratuita</Link></li>
-              <li><button onClick={() => scrollTo('contacto')}>Contacto</button></li>
+              <li><a href="/#contacto" onClick={(e) => { e.preventDefault(); scrollTo('contacto'); }}>Contacto</a></li>
             </ul>
           </div>
 

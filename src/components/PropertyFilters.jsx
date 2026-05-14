@@ -86,8 +86,10 @@ export const PropertyFilters = ({ onFilter, totalResultados, initialOperacion = 
       <div className="filters-bar">
         {/* Búsqueda */}
         <div className="search-input">
-          <MagnifyingGlass size={20} weight="bold" />
+          <label htmlFor="search-busqueda" className="sr-only">Buscar inmuebles</label>
+          <MagnifyingGlass size={20} weight="bold" aria-hidden="true" />
           <input
+            id="search-busqueda"
             type="text"
             placeholder="Buscar por ubicación, título..."
             value={busqueda}
@@ -197,9 +199,10 @@ export const PropertyFilters = ({ onFilter, totalResultados, initialOperacion = 
 
           {/* Ciudad */}
           <div className="filter-group">
-            <label>Ciudad</label>
+            <label htmlFor="filter-ciudad">Ciudad</label>
             <div className="filter-select-wrapper">
               <select 
+                id="filter-ciudad"
                 value={ciudad} 
                 onChange={(e) => setCiudad(e.target.value)}
                 className="filter-select"
@@ -214,9 +217,10 @@ export const PropertyFilters = ({ onFilter, totalResultados, initialOperacion = 
 
           {/* Precio */}
           <div className="filter-group">
-            <label>Precio</label>
+            <label htmlFor="filter-precio">Precio</label>
             <div className="filter-select-wrapper">
               <select 
+                id="filter-precio"
                 value={rangoPrecio} 
                 onChange={(e) => setRangoPrecio(Number(e.target.value))}
                 className="filter-select"

@@ -369,8 +369,9 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                     {step === 1 && (
                         <>
                             <h2>¿Dónde se encuentra el inmueble?</h2>
-                            <p className="modal-subtitle">Código postal</p>
+                            <label htmlFor="val-cp" className="modal-subtitle">Código postal</label>
                             <input
+                                id="val-cp"
                                 type="text"
                                 inputMode="numeric"
                                 maxLength="5"
@@ -405,9 +406,10 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                             <h2>Distribución</h2>
                             <div className="double-input">
                                 <div className="input-group">
-                                    <label>Habitaciones</label>
+                                    <label htmlFor="val-habitaciones">Habitaciones</label>
                                     <div className="input-with-icon">
                                         <input
+                                            id="val-habitaciones"
                                             type="number"
                                             inputMode="numeric"
                                             min="0"
@@ -419,9 +421,10 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                                     </div>
                                 </div>
                                 <div className="input-group">
-                                    <label>Baños</label>
+                                    <label htmlFor="val-banos">Baños</label>
                                     <div className="input-with-icon">
                                         <input
+                                            id="val-banos"
                                             type="number"
                                             inputMode="numeric"
                                             min="0"
@@ -443,7 +446,9 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                             <p className="modal-subtitle">Te enviaremos la valoración</p>
 
                             <div className="input-group">
+                                <label htmlFor="val-email" className="sr-only">Email</label>
                                 <input
+                                    id="val-email"
                                     type="email"
                                     inputMode="email"
                                     autoComplete="email"

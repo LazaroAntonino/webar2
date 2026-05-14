@@ -68,9 +68,9 @@ export const MainNavbar = ({ onHomeClick, alwaysSolid = false }) => {
         {/* MENÚ DESKTOP */}
         <nav className="navbar__menu">
           <Link to="/inmuebles" className="navbar__link">Inmuebles</Link>
-          <button onClick={() => scrollTo("nosotros")}>Nosotros</button>
-          <button onClick={() => scrollTo("testimonios")}>Opiniones</button>
-          <button onClick={() => scrollTo("contacto")}>Contacto</button>
+          <a href="/#nosotros" className="navbar__link" onClick={(e) => { e.preventDefault(); scrollTo("nosotros"); }}>Nosotros</a>
+          <a href="/#testimonios" className="navbar__link" onClick={(e) => { e.preventDefault(); scrollTo("testimonios"); }}>Opiniones</a>
+          <a href="/#contacto" className="navbar__link" onClick={(e) => { e.preventDefault(); scrollTo("contacto"); }}>Contacto</a>
         </nav>
 
         {/* ACCIONES */}
@@ -80,12 +80,14 @@ export const MainNavbar = ({ onHomeClick, alwaysSolid = false }) => {
             <span>+34 640 08 15 99</span>
           </a>
 
-          <button
+          <a
+            href="/#contacto"
             className="navbar__cta"
-            onClick={() => scrollTo("contacto")}
+            onClick={(e) => { e.preventDefault(); scrollTo("contacto"); }}
+            aria-label="Contactar con AR2 Consulting"
           >
             Contáctanos
-          </button>
+          </a>
 
           {/* HAMBURGUESA SOLO MÓVIL */}
           <button
@@ -102,9 +104,9 @@ export const MainNavbar = ({ onHomeClick, alwaysSolid = false }) => {
       {/* MENÚ MÓVIL */}
       <div className={`navbar__mobile ${menuOpen ? "is-open" : ""}`}>
         <Link to="/inmuebles" onClick={() => setMenuOpen(false)}>Inmuebles</Link>
-        <button onClick={() => scrollTo("nosotros")}>Nosotros</button>
-        <button onClick={() => scrollTo("testimonios")}>Opiniones</button>
-        <button onClick={() => scrollTo("contacto")}>Contacto</button>
+        <a href="/#nosotros" onClick={(e) => { e.preventDefault(); scrollTo("nosotros"); }}>Nosotros</a>
+        <a href="/#testimonios" onClick={(e) => { e.preventDefault(); scrollTo("testimonios"); }}>Opiniones</a>
+        <a href="/#contacto" onClick={(e) => { e.preventDefault(); scrollTo("contacto"); }}>Contacto</a>
         <a href="tel:+34640081599" className="navbar__mobile-phone" onClick={() => setMenuOpen(false)}>
           📞 +34 640 08 15 99
         </a>
