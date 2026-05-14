@@ -45,8 +45,8 @@ export const mapRowToInmueble = (row) => ({
     barrio: row.barrio || "",
     ciudad: row.ciudad || "",
     cp: row.cp || "",
-    lat: parseFloat_(row.lat),
-    lng: parseFloat_(row.lng),
+    lat: (() => { const v = parseFloat_(row.lat); return v >= -90 && v <= 90 ? v : 0; })(),
+    lng: (() => { const v = parseFloat_(row.lng); return v >= -180 && v <= 180 ? v : 0; })(),
   },
 
   caracteristicas: {
