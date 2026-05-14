@@ -87,9 +87,10 @@ export const useInmuebles = () => {
 // ================= PROVIDER =================
 export const InmueblesProvider = ({ children }) => {
   // SSR: usa el snapshot del ssgStore (módulo, poblado en fn callback de ViteReactSSG)
-  // Cliente: usa window.__INITIAL_STATE__ inyectado por vite-react-ssg como seed
+  // Cliente: usa window.__SSG_INMUEBLES__ inyectado por onPageRendered en vite.config.js como seed
+  // (vite-react-ssg 0.9.x NO serializa initialState automáticamente → lo inyectamos manualmente)
   const ssgSeed = typeof window !== "undefined"
-    ? (window.__INITIAL_STATE__?.inmuebles ?? [])
+    ? (window.__SSG_INMUEBLES__ ?? [])
     : (getSsgInmuebles() ?? []);
 
   const [inmuebles, setInmuebles] = useState(ssgSeed);
