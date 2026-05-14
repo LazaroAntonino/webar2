@@ -29,6 +29,7 @@ export default function SEO({
       <meta property="og:type" content={type} />
       {resolvedUrl && <meta property="og:url" content={resolvedUrl} />}
       <meta property="og:image" content={resolvedImage} />
+      <meta property="og:locale" content="es_ES" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
