@@ -72,8 +72,8 @@ export const Home = () => {
   return (
     <div className="home-shell">
       <SEO
-        title="AR2 Consulting Inmobiliario — Compra, venta y alquiler de propiedades premium en España"
-        description="AR2 Consulting Inmobiliario — Expertos en compra, venta y alquiler de propiedades premium en España. Valoración gratuita y asesoramiento personalizado."
+        title="AR2 Consulting — Inmobiliario premium en España"
+        description="Expertos en compra, venta y alquiler de propiedades premium en España. Valoración gratuita y asesoramiento personalizado con AR2 Consulting Inmobiliario."
         url="https://ar2house.com/"
         image="https://ar2house.com/og-image.png"
         jsonLd={{

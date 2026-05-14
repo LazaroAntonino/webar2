@@ -217,6 +217,11 @@ export const PropertyDetail = () => {
   if (!inmueble) {
     return (
       <div className="property-detail-page">
+        <SEO
+          title="Inmueble no encontrado | AR2 Consulting"
+          description="Lo sentimos, este inmueble ya no está disponible o no existe."
+          noindex
+        />
         <MainNavbar alwaysSolid />
         <div className="not-found">
           <div className="not-found__content">
@@ -376,6 +381,7 @@ export const PropertyDetail = () => {
         description={seoDesc}
         image={seoImage}
         url={seoUrl}
+        type="article"
         jsonLd={jsonLd}
       />
       <MainNavbar alwaysSolid />
