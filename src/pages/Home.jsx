@@ -382,7 +382,7 @@ export const Home = () => {
             <button 
               className="cta-btn"
               onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             >
               Contáctanos ahora

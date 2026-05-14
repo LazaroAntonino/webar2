@@ -99,10 +99,13 @@ export const InmueblesProvider = ({ children }) => {
 
   useEffect(() => {
     let isMounted = true;
+    // Si ya tenemos datos SSG, hacer un silent refresh en background sin spinner.
+    // Si no hay datos (primer render sin SSG), mostrar loading.
+    const hasSeed = ssgSeed.length > 0;
 
     const loadData = async () => {
       try {
-        setLoading(true);
+        if (!hasSeed) setLoading(true);
         setError(null);
         const data = await fetchInmueblesFromGoogleSheets();
         if (isMounted) {
@@ -112,7 +115,8 @@ export const InmueblesProvider = ({ children }) => {
       } catch (err) {
         console.error("Error cargando inmuebles:", err);
         if (isMounted) {
-          setError(err.message || "Error desconocido al cargar los datos");
+          // Solo mostrar error si no teníamos datos previos
+          if (!hasSeed) setError(err.message || "Error desconocido al cargar los datos");
           setLoading(false);
         }
       }
@@ -123,6 +127,7 @@ export const InmueblesProvider = ({ children }) => {
     return () => {
       isMounted = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const refetch = async () => {

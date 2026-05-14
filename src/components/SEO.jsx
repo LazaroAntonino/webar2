@@ -39,7 +39,7 @@ export default function SEO({
       {/* JSON-LD */}
       {jsonLd && (
         <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
+          {JSON.stringify(jsonLd).replace(/<\/script>/gi, '<\\/script>')}
         </script>
       )}
     </Helmet>
