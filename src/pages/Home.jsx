@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import { MainNavbar } from "../components/MainNavbar";
@@ -9,13 +9,9 @@ import { useInmuebles, LoadingSpinner } from "../hooks/useInmuebles";
 import SEO from "../components/SEO";
 
 import {
-  MapPinLine,
   House,
   ShieldCheck,
   Sparkle,
-  Bed,
-  Bathtub,
-  Ruler,
   Star,
   ArrowRight,
 } from "phosphor-react";

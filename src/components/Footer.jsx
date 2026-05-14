@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Phone, EnvelopeSimple, MapPin, InstagramLogo, LinkedinLogo, FacebookLogo } from "phosphor-react";
 import logoBlanco from "../img/LogoAR2BlancoSinFondoSinFooter.png";

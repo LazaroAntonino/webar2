@@ -74,7 +74,6 @@ export const useInmuebles = () => {
     return () => {
       isMounted = false;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context]);
 
   if (context !== null) {

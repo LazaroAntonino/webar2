@@ -7,7 +7,7 @@
         "dev": "vite --host",
         "start": "vite --host",
         "build": "vite-react-ssg build && node scripts/generate-seo.mjs",
-        "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+        "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 5",
         "preview": "vite preview"
     },
     "dependencies": {

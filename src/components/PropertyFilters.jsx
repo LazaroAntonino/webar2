@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { MagnifyingGlass, SlidersHorizontal, X, CaretDown, House, Buildings, Storefront } from "phosphor-react";
 import "./PropertyFilters.css";
 
@@ -30,7 +30,7 @@ const rangosPrecios = {
   ]
 };
 
-export const PropertyFilters = ({ onFilter, totalResultados, filtrosActivos, initialOperacion = "todas" }) => {
+export const PropertyFilters = ({ onFilter, totalResultados, initialOperacion = "todas" }) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const [operacion, setOperacion] = useState(initialOperacion);

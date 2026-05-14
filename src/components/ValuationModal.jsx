@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import "./ValuationModal.css";
 import { Bed, Bathtub } from "phosphor-react";
 
@@ -249,8 +249,6 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
         setSubmitting(true);
         let calendarOk = false;
         let sheetsOk = false;
-        let calendarError = null;
-        let sheetsError = null;
         try {
             // 1. Crear evento en Google Calendar (backend)
             try {
@@ -273,12 +271,11 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                 });
                 if (!response.ok) {
                     let errMsg = 'Error desconocido al crear la cita en Google Calendar';
-                    try { const e = await response.json(); errMsg = e.details || e.error || errMsg; } catch {}
+                    try { const e = await response.json(); errMsg = e.details || e.error || errMsg; } catch { /* ignore parse errors */ }
                     throw new Error(errMsg);
                 }
                 calendarOk = true;
             } catch (err) {
-                calendarError = err;
                 console.error('Error creando evento en Google Calendar:', err);
             }
 
@@ -301,7 +298,6 @@ export const ValuationModal = ({ open, onClose, tipoInicial }) => {
                 await sendToSheets(dataToSend);
                 sheetsOk = true;
             } catch (err) {
-                sheetsError = err;
                 console.error('Error registrando en Google Sheets:', err);
             }
 
