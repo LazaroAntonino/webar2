@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Bed, Bathtub, Ruler, MapPin } from "phosphor-react";
 import "./PropertyCard.css";

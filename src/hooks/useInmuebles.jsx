@@ -1,162 +1,34 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import Papa from "papaparse";
-
-// URL del Google Sheets publicado como CSV
-const GOOGLE_SHEETS_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCSUzSkt3wS0wR4vJR8EEWF5Kdukn5KmR30n7y5yYKPu_RmsEG8dlMrL_DF1Tu3gPLrbVlO9-yxT3K/pub?output=csv";
+import { GOOGLE_SHEETS_CSV_URL, mapRowToInmueble } from "../lib/mapInmueble.js";
+import { getSsgInmuebles } from "../lib/ssgStore.js";
 
 // ================= CONTEXTO GLOBAL =================
 const InmueblesContext = createContext(null);
 
-// ================= FUNCIÓN DE MAPEO =================
-/**
- * Convierte una fila plana del CSV a la estructura de objeto anidada
- * que usa la aplicación.
- * 
- * Campos del CSV:
- * id;mostrarenweb;titulo;slug;tipo;operacion;precio;direccion;barrio;ciudad;cp;lat;lng;
- * m2Construidos;m2Utiles;habitaciones;banos;terraza;m2Terraza;ascensor;garaje;
- * plazasGaraje;trastero;piscina;aireAco;calefaccion;orientacion;planta;antiguedad;
- * parcela;destacado;nuevo;descripcion;descripcionCorta;imagenes;fechaPublicacion;
- * agente_nombre;agente_telefono;agente_email
- */
-const mapRowToInmueble = (row) => {
-  // Función helper para parsear booleanos
-  const parseBoolean = (value) => {
-    if (typeof value === "boolean") return value;
-    if (typeof value === "string") {
-      const cleaned = value.trim().toUpperCase();
-      return cleaned === "TRUE" || cleaned === "1" || cleaned === "SI" || cleaned === "SÍ";
-    }
-    return false;
-  };
-
-  // Función helper para parsear números de forma segura
-  const parseNumber = (value, defaultValue = 0) => {
-    if (value === "" || value === null || value === undefined) return defaultValue;
-    const parsed = Number(value);
-    return isNaN(parsed) ? defaultValue : parsed;
-  };
-
-  // Función helper para parsear floats (coordenadas)
-  const parseFloat_ = (value, defaultValue = 0) => {
-    if (value === "" || value === null || value === undefined) return defaultValue;
-    // Reemplazar coma por punto para coordenadas en formato español
-    const cleanValue = String(value).replace(",", ".");
-    const parsed = parseFloat(cleanValue);
-    return isNaN(parsed) ? defaultValue : parsed;
-  };
-
-  // Parsear imágenes (string de URLs separadas por coma)
-  const parseImagenes = (value) => {
-    if (!value || typeof value !== "string" || value.trim() === "") {
-      return [];
-    }
-    return value
-      .split(",")
-      .map((url) => url.trim())
-      .filter((url) => url.length > 0);
-  };
-
-  return {
-    // Campos principales
-    id: String(row.id || ""),
-    mostrarEnWeb: parseBoolean(row.mostrarenweb),
-    titulo: row.titulo || "",
-    slug: row.slug || "",
-    tipo: row.tipo || "piso",
-    operacion: row.operacion || "venta",
-    precio: parseNumber(row.precio),
-    
-    // Ubicación (objeto anidado)
-    ubicacion: {
-      direccion: row.direccion || "",
-      barrio: row.barrio || "",
-      ciudad: row.ciudad || "",
-      cp: row.cp || "",
-      lat: parseFloat_(row.lat),
-      lng: parseFloat_(row.lng),
-    },
-    
-    // Características (objeto anidado)
-    // Nota: El CSV usa m2Construidos, m2Utiles, m2Terraza, aireAco
-    caracteristicas: {
-      metrosConstruidos: parseNumber(row.m2Construidos),
-      metrosUtiles: parseNumber(row.m2Utiles),
-      habitaciones: parseNumber(row.habitaciones),
-      banos: parseNumber(row.banos),
-      terraza: parseBoolean(row.terraza),
-      metrosTerraza: parseNumber(row.m2Terraza),
-      ascensor: parseBoolean(row.ascensor),
-      garaje: parseBoolean(row.garaje),
-      plazasGaraje: parseNumber(row.plazasGaraje),
-      trastero: parseBoolean(row.trastero),
-      piscina: parseBoolean(row.piscina),
-      aireAcondicionado: parseBoolean(row.aireAco),
-      calefaccion: row.calefaccion || "",
-      orientacion: row.orientacion || "",
-      planta: parseNumber(row.planta),
-      antiguedad: parseNumber(row.antiguedad),
-      parcela: parseNumber(row.parcela),
-    },
-    
-    // Flags
-    destacado: parseBoolean(row.destacado),
-    nuevo: parseBoolean(row.nuevo),
-    
-    // Precio con tipo (derivado de operación: alquiler → "mes", venta → "venta")
-    precioTipo: (row.operacion || "").trim().toLowerCase() === "alquiler" ? "mes" : "venta",
-    
-    // Descripciones
-    descripcion: row.descripcion || "",
-    descripcionCorta: row.descripcionCorta || "",
-    
-    // Imágenes (convertir string a array)
-    imagenes: parseImagenes(row.imagenes),
-    
-    // Fecha
-    fechaPublicacion: row.fechaPublicacion || "",
-    
-    // Agente (objeto anidado)
-    agente: {
-      nombre: row.agente_nombre || "",
-      telefono: row.agente_telefono || "",
-      email: row.agente_email || "",
-    },
-  };
-};
-
 // ================= FUNCIÓN DE FETCH =================
-/**
- * Obtiene y parsea los datos del Google Sheets CSV
- */
 const fetchInmueblesFromGoogleSheets = async () => {
   const response = await fetch(GOOGLE_SHEETS_CSV_URL);
-  
+
   if (!response.ok) {
     throw new Error(`Error al cargar datos: ${response.status} ${response.statusText}`);
   }
-  
+
   const csvText = await response.text();
-  
+
   return new Promise((resolve, reject) => {
     Papa.parse(csvText, {
       header: true,
-      // Dejar que papaparse detecte automáticamente el delimitador
       skipEmptyLines: true,
       transformHeader: (header) => header.trim(),
       complete: (results) => {
         if (results.errors.length > 0) {
           console.warn("Advertencias al parsear CSV:", results.errors);
         }
-        
-        // Mapear cada fila a la estructura de inmueble
-        // y filtrar solo los que tienen mostrarEnWeb: true
         const inmuebles = results.data
-          .filter((row) => row.id && String(row.id).trim() !== "") // Filtrar filas vacías
+          .filter((row) => row.id && String(row.id).trim() !== "")
           .map(mapRowToInmueble)
-          .filter((inmueble) => inmueble.mostrarEnWeb === true); // Solo mostrar inmuebles con mostrarEnWeb: true
-        
+          .filter((inmueble) => inmueble.mostrarEnWeb === true);
         resolve(inmuebles);
       },
       error: (error) => {
@@ -167,21 +39,14 @@ const fetchInmueblesFromGoogleSheets = async () => {
 };
 
 // ================= HOOK useInmuebles =================
-/**
- * Hook personalizado para consumir los datos de inmuebles.
- * Maneja estados de carga, error y caché.
- * Siempre llama los hooks en el mismo orden (regla de React).
- */
 export const useInmuebles = () => {
   const context = useContext(InmueblesContext);
 
-  // Fallback state — solo se usa si el componente está fuera del Provider
   const [inmuebles, setInmuebles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Si hay contexto, el Provider ya gestiona los datos — no hacer nada
     if (context !== null) return;
 
     let isMounted = true;
@@ -190,9 +55,7 @@ export const useInmuebles = () => {
       try {
         setLoading(true);
         setError(null);
-        
         const data = await fetchInmueblesFromGoogleSheets();
-        
         if (isMounted) {
           setInmuebles(data);
           setLoading(false);
@@ -201,6 +64,58 @@ export const useInmuebles = () => {
         console.error("Error cargando inmuebles:", err);
         if (isMounted) {
           setError(err.message || "Error desconocido al cargar los datos");
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [context]);
+
+  if (context !== null) {
+    return context;
+  }
+
+  return { inmuebles, loading, error };
+};
+
+// ================= PROVIDER =================
+export const InmueblesProvider = ({ children }) => {
+  // SSR: usa el snapshot del ssgStore (módulo, poblado en fn callback de ViteReactSSG)
+  // Cliente: usa window.__SSG_INMUEBLES__ inyectado por onPageRendered en vite.config.js como seed
+  // (vite-react-ssg 0.9.x NO serializa initialState automáticamente → lo inyectamos manualmente)
+  const ssgSeed = typeof window !== "undefined"
+    ? (window.__SSG_INMUEBLES__ ?? [])
+    : (getSsgInmuebles() ?? []);
+
+  const [inmuebles, setInmuebles] = useState(ssgSeed);
+  const [loading, setLoading] = useState(ssgSeed.length === 0);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    // Si ya tenemos datos SSG, hacer un silent refresh en background sin spinner.
+    // Si no hay datos (primer render sin SSG), mostrar loading.
+    const hasSeed = ssgSeed.length > 0;
+
+    const loadData = async () => {
+      try {
+        if (!hasSeed) setLoading(true);
+        setError(null);
+        const data = await fetchInmueblesFromGoogleSheets();
+        if (isMounted) {
+          setInmuebles(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Error cargando inmuebles:", err);
+        if (isMounted) {
+          // Solo mostrar error si no teníamos datos previos
+          if (!hasSeed) setError(err.message || "Error desconocido al cargar los datos");
           setLoading(false);
         }
       }
@@ -212,57 +127,8 @@ export const useInmuebles = () => {
       isMounted = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [context]);
-
-  // Si hay contexto del Provider, usarlo directamente
-  if (context !== null) {
-    return context;
-  }
-
-  return { inmuebles, loading, error };
-};
-
-// ================= PROVIDER =================
-/**
- * Provider que comparte los datos de inmuebles entre todos los componentes.
- * Evita múltiples llamadas al API.
- */
-export const InmueblesProvider = ({ children }) => {
-  const [inmuebles, setInmuebles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const data = await fetchInmueblesFromGoogleSheets();
-        
-        if (isMounted) {
-          setInmuebles(data);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Error cargando inmuebles:", err);
-        if (isMounted) {
-          setError(err.message || "Error desconocido al cargar los datos");
-          setLoading(false);
-        }
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-  // Función para recargar los datos manualmente
   const refetch = async () => {
     setLoading(true);
     setError(null);

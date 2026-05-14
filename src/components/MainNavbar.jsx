@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./MainNavbar.css";
 import logoSinFondo from "../img/LogoAR2BlancoSinFondoSinFooter.png";
 import { Phone, List, X } from "phosphor-react";

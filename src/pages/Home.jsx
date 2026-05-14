@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import { MainNavbar } from "../components/MainNavbar";
@@ -6,15 +6,12 @@ import { Footer } from "../components/Footer";
 import { ValuationModal } from "../components/ValuationModal";
 import { PropertyCard } from "../components/PropertyCard";
 import { useInmuebles, LoadingSpinner } from "../hooks/useInmuebles";
+import SEO from "../components/SEO";
 
 import {
-  MapPinLine,
   House,
   ShieldCheck,
   Sparkle,
-  Bed,
-  Bathtub,
-  Ruler,
   Star,
   ArrowRight,
 } from "phosphor-react";
@@ -70,7 +67,49 @@ export const Home = () => {
 
   return (
     <div className="home-shell">
-      <MainNavbar onHomeClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
+      <SEO
+        title="AR2 Consulting — Inmobiliario premium en España"
+        description="Expertos en compra, venta y alquiler de propiedades premium en España. Valoración gratuita y asesoramiento personalizado con AR2 Consulting Inmobiliario."
+        url="https://ar2house.com/"
+        image="https://ar2house.com/og-image.png"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://ar2house.com/#organization",
+              "name": "AR2 Consulting Inmobiliario",
+              "url": "https://ar2house.com",
+              "logo": "https://ar2house.com/og-image.png",
+              "telephone": "+34640081599",
+              "email": "info@ar2.es",
+              "areaServed": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Málaga", "Jaén"],
+              "sameAs": []
+            },
+            {
+              "@type": "RealEstateAgent",
+              "@id": "https://ar2house.com/#agent",
+              "name": "AR2 Consulting Inmobiliario",
+              "url": "https://ar2house.com",
+              "telephone": "+34640081599",
+              "email": "info@ar2.es",
+              "areaServed": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Málaga", "Jaén"]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://ar2house.com/#website",
+              "url": "https://ar2house.com",
+              "name": "AR2 Consulting Inmobiliario",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://ar2house.com/inmuebles?busqueda={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            }
+          ]
+        }}
+      />
+      <MainNavbar onHomeClick={() => typeof window !== 'undefined' && window.scrollTo({ top: 0, behavior: "smooth" })} />
 
       <main>
         {/* ================= HERO VALORACIÓN ================= */}
@@ -339,7 +378,7 @@ export const Home = () => {
             <button 
               className="cta-btn"
               onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             >
               Contáctanos ahora

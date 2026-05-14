@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { MainNavbar } from "../components/MainNavbar";
 import { Footer } from "../components/Footer";
 import { PropertyCard } from "../components/PropertyCard";
+import SEO from "../components/SEO";
 import {
   CaretLeft,
   CaretRight,
@@ -77,12 +78,12 @@ export const PropertyDetail = () => {
 
   // Reset imagen y scroll cuando cambia el inmueble
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    setCurrentImage(0); // Resetear al cambiar de inmueble
-    setShowContactForm(false); // También cerrar el formulario de contacto
-    setShowLightbox(false); // Cerrar lightbox si está abierto
-    setFormSent(false); // Resetear estado de formulario enviado
-    setShowBottomBar(false); // Resetear barra inferior
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'instant' });
+    setCurrentImage(0);
+    setShowContactForm(false);
+    setShowLightbox(false);
+    setFormSent(false);
+    setShowBottomBar(false);
   }, [id]);
 
   // Reset scroll del carrusel al cambiar de inmueble
@@ -95,6 +96,7 @@ export const PropertyDetail = () => {
 
   // IntersectionObserver para trackear qué slide está visible
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (!carouselRef.current) return;
     const slides = carouselRef.current.querySelectorAll('.gallery-slide');
     if (!slides.length) return;
@@ -117,6 +119,7 @@ export const PropertyDetail = () => {
 
   // IntersectionObserver para mostrar la bottom-bar cuando property-intro sale del viewport
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const intro = document.querySelector('.property-intro');
     if (!intro) return;
 
@@ -146,6 +149,7 @@ export const PropertyDetail = () => {
 
   // Cerrar lightbox con tecla Escape — usa refs para evitar stale closure
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const handleKeyDown = (e) => {
       if (!showLightbox) return;
       if (e.key === 'Escape') {
@@ -213,6 +217,11 @@ export const PropertyDetail = () => {
   if (!inmueble) {
     return (
       <div className="property-detail-page">
+        <SEO
+          title="Inmueble no encontrado | AR2 Consulting"
+          description="Lo sentimos, este inmueble ya no está disponible o no existe."
+          noindex
+        />
         <MainNavbar alwaysSolid />
         <div className="not-found">
           <div className="not-found__content">
@@ -266,7 +275,7 @@ export const PropertyDetail = () => {
   // Abrir ubicación en Google Maps
   const openInMaps = () => {
     const query = encodeURIComponent(`${ubicacion.direccion}, ${ubicacion.ciudad}, España`);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+    if (typeof window !== 'undefined') window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
   // Manejar envío del formulario de contacto
@@ -286,7 +295,7 @@ export const PropertyDetail = () => {
       `- Email: ${email}\n` +
       `- Teléfono: ${telefono || 'No proporcionado'}\n\n` +
       `Mensaje:\n${mensaje}\n\n` +
-      `Enlace al inmueble: ${window.location.href}`
+      `Enlace al inmueble: ${typeof window !== 'undefined' ? window.location.href : ''}`
     );
     
     const recipientEmail = agente.email || 'info@ar2house.com';
@@ -310,8 +319,77 @@ export const PropertyDetail = () => {
     { icon: Calendar, label: "Año construcción", value: caracteristicas.antiguedad, show: !!caracteristicas.antiguedad },
   ].filter(item => item.show);
 
+  // SEO metadata
+  const seoTitle = (() => {
+    const full = `${titulo} — ${ubicacion.ciudad} | AR2 Consulting`;
+    if (full.length <= 60) return full;
+    const short = `${titulo} | AR2 Consulting`;
+    if (short.length <= 60) return short;
+    // Truncar el título respetando palabras completas, sin dejar separadores colgando
+    const maxTitle = 60 - ' | AR2 Consulting'.length; // ~43ch para el título
+    const truncated = titulo.slice(0, maxTitle).replace(/\s+\S*$/, '');
+    return `${truncated}… | AR2 Consulting`;
+  })();
+  const seoDesc = inmueble.descripcionCorta
+    ? inmueble.descripcionCorta.slice(0, 160)
+    : descripcion.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 157).replace(/\s+\S*$/, '') + '…';
+  const seoImage = imagenes[0] || 'https://ar2house.com/og-image.png';
+  const seoUrl = `https://ar2house.com/inmuebles/${id}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://ar2house.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Inmuebles", "item": "https://ar2house.com/inmuebles" },
+          { "@type": "ListItem", "position": 3, "name": titulo, "item": seoUrl }
+        ]
+      },
+      {
+        "@type": "RealEstateListing",
+        "url": seoUrl,
+        "name": titulo,
+        "description": descripcion.replace(/\n/g, ' '),
+        ...(fechaPublicacion ? { "datePosted": fechaPublicacion } : {}),
+        ...(imagenes.length > 0 ? { "image": imagenes } : {}),
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": ubicacion.direccion,
+          ...(ubicacion.cp ? { "postalCode": ubicacion.cp } : {}),
+          "addressLocality": ubicacion.ciudad,
+          "addressCountry": "ES"
+        },
+        ...(ubicacion.lat && ubicacion.lng ? {
+          "geo": { "@type": "GeoCoordinates", "latitude": ubicacion.lat, "longitude": ubicacion.lng }
+        } : {}),
+        "offers": {
+          "@type": "Offer",
+          "price": precio,
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock",
+          "businessFunction": operacion === 'alquiler'
+            ? "https://purl.org/goodrelations/v1#LeaseOut"
+            : "https://purl.org/goodrelations/v1#Sell"
+        },
+        "floorSize": { "@type": "QuantitativeValue", "value": caracteristicas.metrosConstruidos, "unitCode": "MTK" },
+        ...(caracteristicas.habitaciones > 0 ? { "numberOfRooms": caracteristicas.habitaciones } : {}),
+        ...(caracteristicas.banos > 0 ? { "numberOfBathroomsTotal": caracteristicas.banos } : {})
+      }
+    ]
+  };
+
   return (
     <div className="property-detail-page">
+      <SEO
+        title={seoTitle}
+        description={seoDesc}
+        image={seoImage}
+        url={seoUrl}
+        type="article"
+        jsonLd={jsonLd}
+      />
       <MainNavbar alwaysSolid />
 
       {/* LIGHTBOX / MODAL FULLSCREEN */}
