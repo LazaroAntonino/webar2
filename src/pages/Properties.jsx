@@ -81,6 +81,12 @@ export const Properties = () => {
     });
   }, [filtros, inmuebles]);
 
+  // Ciudades disponibles — derivadas dinámicamente de los datos reales
+  const ciudades = useMemo(() => {
+    const set = new Set(inmuebles.map(i => i.ubicacion.ciudad).filter(Boolean));
+    return ["Todas", ...Array.from(set).sort((a, b) => a.localeCompare(b, "es"))];
+  }, [inmuebles]);
+
   // Estadísticas rápidas
   const stats = useMemo(() => {
     const ventas = inmuebles.filter(i => i.operacion === 'venta').length;
@@ -182,6 +188,7 @@ export const Properties = () => {
             onFilter={setFiltros}
             totalResultados={inmueblesFiltrados.length}
             initialOperacion={searchParams.get("operacion") || "todas"}
+            ciudadesDisponibles={ciudades}
           />
 
           {/* ESTADOS: Loading / Error / Resultados */}
