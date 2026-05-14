@@ -6,6 +6,7 @@ import { PropertyCard } from "../components/PropertyCard";
 import { PropertyFilters } from "../components/PropertyFilters";
 import { House, Buildings, TrendUp, CaretRight } from "phosphor-react";
 import { useInmuebles, LoadingSpinner, ErrorMessage } from "../hooks/useInmuebles";
+import SEO from "../components/SEO";
 import "./Properties.css";
 
 export const Properties = () => {
@@ -91,11 +92,49 @@ export const Properties = () => {
 
   // Scroll to top on mount
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
+
+  const seoTitle = filtros.operacion === 'venta'
+    ? 'Inmuebles en venta | AR2 Consulting'
+    : filtros.operacion === 'alquiler'
+    ? 'Inmuebles en alquiler | AR2 Consulting'
+    : 'Inmuebles en venta y alquiler en España | AR2';
+
+  const seoDesc = `Descubre inmuebles ${filtros.operacion === 'todas' ? 'en venta y alquiler' : filtros.operacion} en Madrid, Barcelona, Valencia, Sevilla, Málaga y Jaén. AR2 Consulting Inmobiliario.`;
+
+  const itemListLd = inmueblesFiltrados.slice(0, 20).map((p, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "url": `https://ar2house.com/inmuebles/${p.id}`,
+    "name": p.titulo,
+    ...(p.imagenes?.[0] ? { "image": p.imagenes[0] } : {}),
+  }));
 
   return (
     <div className="properties-page">
+      <SEO
+        title={seoTitle}
+        description={seoDesc}
+        url="https://ar2house.com/inmuebles"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://ar2house.com/" },
+                { "@type": "ListItem", "position": 2, "name": "Inmuebles", "item": "https://ar2house.com/inmuebles" }
+              ]
+            },
+            {
+              "@type": "ItemList",
+              "name": seoTitle,
+              "itemListElement": itemListLd
+            }
+          ]
+        }}
+      />
       <MainNavbar onHomeClick={() => {}} />
 
       {/* HERO COMPACTO */}
