@@ -11,7 +11,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGIN || 'https://ar2house.com',
+    methods: ['POST'],
+}));
 
 // --- Configuración de Autenticación con Google Calendar ---
 let serviceAccountKey;
@@ -41,7 +44,8 @@ else {
     }
 }
 
-console.log('DEBUG: client_email:', serviceAccountKey.client_email);
+// Log parcial para confirmar carga sin exponer la clave completa
+console.log('DEBUG: client_email loaded:', serviceAccountKey.client_email ? serviceAccountKey.client_email.split('@')[0] + '@...' : 'MISSING');
 
 // --- Inicializar jwtClient ---
 const jwtClient = new google.auth.JWT({

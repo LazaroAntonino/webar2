@@ -321,12 +321,18 @@ export const PropertyDetail = () => {
 
   // SEO metadata
   const seoTitle = (() => {
-    const raw = `${titulo} — ${ubicacion.ciudad} | AR2 Consulting`;
-    return raw.length > 60 ? raw.slice(0, 57) + '...' : raw;
+    const full = `${titulo} — ${ubicacion.ciudad} | AR2 Consulting`;
+    if (full.length <= 60) return full;
+    const short = `${titulo} | AR2 Consulting`;
+    if (short.length <= 60) return short;
+    // Truncar el título respetando palabras completas, sin dejar separadores colgando
+    const maxTitle = 60 - ' | AR2 Consulting'.length; // ~43ch para el título
+    const truncated = titulo.slice(0, maxTitle).replace(/\s+\S*$/, '');
+    return `${truncated}… | AR2 Consulting`;
   })();
   const seoDesc = inmueble.descripcionCorta
-    ? inmueble.descripcionCorta
-    : descripcion.replace(/\n/g, ' ').slice(0, 155);
+    ? inmueble.descripcionCorta.slice(0, 160)
+    : descripcion.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 157).replace(/\s+\S*$/, '') + '…';
   const seoImage = imagenes[0] || 'https://ar2house.com/og-image.png';
   const seoUrl = `https://ar2house.com/inmuebles/${id}`;
 
