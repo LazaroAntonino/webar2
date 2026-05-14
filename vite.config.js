@@ -4,6 +4,12 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     plugins: [react()],
+    ssgOptions: {
+        // nested: /inmuebles → dist/inmuebles/index.html (necesario para Vercel static)
+        dirStyle: 'nested',
+        // mock evita errores de window/document durante SSR si algún módulo escapa a los guards
+        mock: false,
+    },
     server: {
         port: 3000,
         proxy: {
@@ -12,7 +18,6 @@ export default defineConfig({
                 changeOrigin: true,
             },
         },
-        // Restringir acceso del servidor solo a carpetas permitidas
         fs: {
             strict: true,
             allow: ['./src', './node_modules', './public', './index.html'],
@@ -31,10 +36,8 @@ export default defineConfig({
     build: {
         outDir: 'dist'
     },
-    // Excluir carpetas problemáticas del análisis de dependencias
     optimizeDeps: {
         exclude: [],
-        // Forzar que solo analice dentro de src
         entries: ['src/main.jsx']
     }
 });
