@@ -4,7 +4,7 @@ import logoSinFondo from "../img/LogoAR2BlancoSinFondoSinFooter.png";
 import { Phone, List, X } from "phosphor-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
-export const MainNavbar = ({ onHomeClick, alwaysSolid = false }) => {
+export const MainNavbar = ({ onHomeClick, alwaysSolid = true }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);

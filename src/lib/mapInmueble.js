@@ -31,56 +31,75 @@ const parseImagenes = (value) => {
   return value.split(",").map((url) => url.trim()).filter((url) => url.length > 0);
 };
 
-export const mapRowToInmueble = (row) => ({
-  id: String(row.id || ""),
-  mostrarEnWeb: parseBoolean(row.mostrarenweb),
-  titulo: row.titulo || "",
-  slug: row.slug || "",
-  tipo: row.tipo || "piso",
-  operacion: row.operacion || "venta",
-  precio: parseNumber(row.precio),
+export const generateSlug = (titulo, id) => {
+  const base = String(titulo || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .slice(0, 60)
+    .replace(/-+$/, "");
+  return base ? `${base}-${id}` : String(id);
+};
 
-  ubicacion: {
-    direccion: row.direccion || "",
-    barrio: row.barrio || "",
-    ciudad: row.ciudad || "",
-    cp: row.cp || "",
-    lat: (() => { const v = parseFloat_(row.lat); return v >= -90 && v <= 90 ? v : 0; })(),
-    lng: (() => { const v = parseFloat_(row.lng); return v >= -180 && v <= 180 ? v : 0; })(),
-  },
+export const mapRowToInmueble = (row) => {
+  const id = String(row.id || "");
+  const titulo = row.titulo || "";
+  const rawSlug = String(row.slug || "").trim();
+  const slug = rawSlug || generateSlug(titulo, id);
 
-  caracteristicas: {
-    metrosConstruidos: parseNumber(row.m2Construidos),
-    metrosUtiles: parseNumber(row.m2Utiles),
-    habitaciones: parseNumber(row.habitaciones),
-    banos: parseNumber(row.banos),
-    terraza: parseBoolean(row.terraza),
-    metrosTerraza: parseNumber(row.m2Terraza),
-    ascensor: parseBoolean(row.ascensor),
-    garaje: parseBoolean(row.garaje),
-    plazasGaraje: parseNumber(row.plazasGaraje),
-    trastero: parseBoolean(row.trastero),
-    piscina: parseBoolean(row.piscina),
-    aireAcondicionado: parseBoolean(row.aireAco),
-    calefaccion: row.calefaccion || "",
-    orientacion: row.orientacion || "",
-    planta: parseNumber(row.planta),
-    antiguedad: parseNumber(row.antiguedad),
-    parcela: parseNumber(row.parcela),
-  },
+  return {
+    id,
+    slug,
+    mostrarEnWeb: parseBoolean(row.mostrarenweb),
+    titulo,
+    tipo: row.tipo || "piso",
+    operacion: row.operacion || "venta",
+    precio: parseNumber(row.precio),
 
-  destacado: parseBoolean(row.destacado),
-  nuevo: parseBoolean(row.nuevo),
-  precioTipo: (row.operacion || "").trim().toLowerCase() === "alquiler" ? "mes" : "venta",
+    ubicacion: {
+      direccion: row.direccion || "",
+      barrio: row.barrio || "",
+      ciudad: row.ciudad || "",
+      cp: row.cp || "",
+      lat: (() => { const v = parseFloat_(row.lat); return v >= -90 && v <= 90 ? v : 0; })(),
+      lng: (() => { const v = parseFloat_(row.lng); return v >= -180 && v <= 180 ? v : 0; })(),
+    },
 
-  descripcion: row.descripcion || "",
-  descripcionCorta: row.descripcionCorta || "",
-  imagenes: parseImagenes(row.imagenes),
-  fechaPublicacion: row.fechaPublicacion || "",
+    caracteristicas: {
+      metrosConstruidos: parseNumber(row.m2Construidos),
+      metrosUtiles: parseNumber(row.m2Utiles),
+      habitaciones: parseNumber(row.habitaciones),
+      banos: parseNumber(row.banos),
+      terraza: parseBoolean(row.terraza),
+      metrosTerraza: parseNumber(row.m2Terraza),
+      ascensor: parseBoolean(row.ascensor),
+      garaje: parseBoolean(row.garaje),
+      plazasGaraje: parseNumber(row.plazasGaraje),
+      trastero: parseBoolean(row.trastero),
+      piscina: parseBoolean(row.piscina),
+      aireAcondicionado: parseBoolean(row.aireAco),
+      calefaccion: row.calefaccion || "",
+      orientacion: row.orientacion || "",
+      planta: parseNumber(row.planta),
+      antiguedad: parseNumber(row.antiguedad),
+      parcela: parseNumber(row.parcela),
+    },
 
-  agente: {
-    nombre: row.agente_nombre || "",
-    telefono: row.agente_telefono || "",
-    email: row.agente_email || "",
-  },
-});
+    destacado: parseBoolean(row.destacado),
+    nuevo: parseBoolean(row.nuevo),
+    precioTipo: (row.operacion || "").trim().toLowerCase() === "alquiler" ? "mes" : "venta",
+
+    descripcion: row.descripcion || "",
+    descripcionCorta: row.descripcionCorta || "",
+    imagenes: parseImagenes(row.imagenes),
+    fechaPublicacion: row.fechaPublicacion || "",
+
+    agente: {
+      nombre: row.agente_nombre || "",
+      telefono: row.agente_telefono || "",
+      email: row.agente_email || "",
+    },
+  };
+};

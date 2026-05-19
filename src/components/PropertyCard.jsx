@@ -33,7 +33,7 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
   return (
     <article className={`property-card ${variant === 'featured' ? 'property-card--featured' : ''}`}>
       {/* IMAGEN */}
-      <Link to={`/inmuebles/${id}`} className="property-card__image-link">
+      <Link to={`/inmuebles/${inmueble.slug || inmueble.id}`} className="property-card__image-link">
         <div className="property-card__image">
           {imagenes?.[0] ? (
             <img
@@ -77,7 +77,7 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
         </span>
 
         {/* Título */}
-        <Link to={`/inmuebles/${id}`}>
+        <Link to={`/inmuebles/${inmueble.slug || inmueble.id}`}>
           <h3 className="property-card__title">{titulo}</h3>
         </Link>
 
@@ -110,7 +110,7 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
         </div>
 
         {/* CTA */}
-        <Link to={`/inmuebles/${id}`} className="property-card__cta">
+        <Link to={`/inmuebles/${inmueble.slug || inmueble.id}`} className="property-card__cta">
           Ver propiedad
         </Link>
       </div>

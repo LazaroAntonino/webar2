@@ -4,7 +4,7 @@ import { Properties } from "./pages/Properties";
 import { PropertyDetail } from "./pages/PropertyDetail";
 import { StoreProvider } from "./hooks/useGlobalReducer";
 import { InmueblesProvider } from "./hooks/useInmuebles";
-import { GOOGLE_SHEETS_CSV_URL, mapRowToInmueble } from "./lib/mapInmueble.js";
+import { GOOGLE_SHEETS_CSV_URL, mapRowToInmueble, generateSlug } from "./lib/mapInmueble.js";
 import SEO from "./components/SEO";
 
 // Root layout: inyecta los providers globales
@@ -75,7 +75,7 @@ export const routes = [
       { index: true, element: <Home /> },
       { path: "inmuebles", element: <Properties /> },
       {
-        path: "inmuebles/:id",
+        path: "inmuebles/:slug",
         element: <PropertyDetail />,
         getStaticPaths: async () => {
           try {
@@ -92,7 +92,7 @@ export const routes = [
                     .filter((row) => row.id && String(row.id).trim() !== "")
                     .map(mapRowToInmueble)
                     .filter((p) => p.mostrarEnWeb)
-                    .map((p) => `/inmuebles/${p.id}`);
+                    .map((p) => `/inmuebles/${p.slug || generateSlug(p.titulo, p.id)}`);
                   resolve(paths);
                 },
                 error: () => resolve([]),

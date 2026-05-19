@@ -29,7 +29,7 @@ import { useInmuebles, LoadingSpinner, ErrorMessage } from "../hooks/useInmueble
 import "./PropertyDetail.css";
 
 export const PropertyDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [currentImage, setCurrentImage] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
@@ -48,10 +48,10 @@ export const PropertyDetail = () => {
   // Obtener inmuebles desde Google Sheets
   const { inmuebles, loading, error, refetch } = useInmuebles();
 
-  // Buscar el inmueble
+  // Buscar el inmueble por slug (con fallback a id para compatibilidad con URLs antiguas)
   const inmueble = useMemo(() => {
-    return inmuebles.find(item => item.id === id);
-  }, [id, inmuebles]);
+    return inmuebles.find(item => item.slug === slug || item.id === slug);
+  }, [slug, inmuebles]);
 
   // Imágenes del inmueble actual (array vacío si no existe aún)
   const imagenes = inmueble?.imagenes ?? [];
@@ -70,13 +70,13 @@ export const PropertyDetail = () => {
     if (!inmueble) return [];
     return inmuebles
       .filter(item => 
-        item.id !== id && 
+        item.id !== inmueble.id && 
         (item.ubicacion.ciudad === inmueble.ubicacion.ciudad || item.tipo === inmueble.tipo)
       )
       .slice(0, 3);
-  }, [inmueble, id, inmuebles]);
+  }, [inmueble, inmuebles]);
 
-  // Reset imagen y scroll cuando cambia el inmueble
+  // Reset imagen y scroll cuando cambia el slug
   useEffect(() => {
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'instant' });
     setCurrentImage(0);
@@ -84,7 +84,7 @@ export const PropertyDetail = () => {
     setShowLightbox(false);
     setFormSent(false);
     setShowBottomBar(false);
-  }, [id]);
+  }, [slug]);
 
   // Reset scroll del carrusel al cambiar de inmueble
   useEffect(() => {
@@ -92,7 +92,7 @@ export const PropertyDetail = () => {
       carouselRef.current.scrollTo({ left: 0, behavior: 'instant' });
     }
     setCurrentSlide(0);
-  }, [id]);
+  }, [slug]);
 
   // IntersectionObserver para trackear qué slide está visible
   useEffect(() => {
@@ -334,7 +334,7 @@ export const PropertyDetail = () => {
     ? inmueble.descripcionCorta.slice(0, 160)
     : descripcion.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 157).replace(/\s+\S*$/, '') + '…';
   const seoImage = imagenes[0] || 'https://ar2house.com/og-image.png';
-  const seoUrl = `https://ar2house.com/inmuebles/${id}`;
+  const seoUrl = `https://ar2house.com/inmuebles/${inmueble.slug}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -787,28 +787,27 @@ export const PropertyDetail = () => {
         </section>
       )}
 
-      {!showLightbox && (
-        <div
-          className={`property-bottom-bar ${showBottomBar ? 'is-visible' : ''}`}
-          role="region"
-          aria-label="Precio y contacto"
-        >
-          <div className="property-bottom-bar__price">
-            <span className="property-bottom-bar__label">Desde</span>
-            <span className="property-bottom-bar__value">
-              {formatPrecio(precio, precioTipo)}
-            </span>
-          </div>
-          <a
-            href={agente.telefono ? `tel:${agente.telefono}` : 'tel:+34640081599'}
-            className="property-bottom-bar__cta"
-            aria-label="Llamar al asesor para agendar visita"
-          >
-            <Phone size={16} weight="bold" />
-            <span>Agendar visita</span>
-          </a>
+      <div
+        className={`property-bottom-bar ${showBottomBar && !showLightbox ? 'is-visible' : ''}`}
+        role="region"
+        aria-label="Precio y contacto"
+        aria-hidden={!showBottomBar || showLightbox}
+      >
+        <div className="property-bottom-bar__price">
+          <span className="property-bottom-bar__label">Desde</span>
+          <span className="property-bottom-bar__value">
+            {formatPrecio(precio, precioTipo)}
+          </span>
         </div>
-      )}
+        <a
+          href={agente.telefono ? `tel:${agente.telefono}` : 'tel:+34640081599'}
+          className="property-bottom-bar__cta"
+          aria-label="Llamar al asesor para agendar visita"
+        >
+          <Phone size={16} weight="bold" />
+          <span>Agendar visita</span>
+        </a>
+      </div>
 
       <Footer />
     </div>
