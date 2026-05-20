@@ -4,6 +4,7 @@ import { writeFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import Papa from "papaparse";
+import { generateSlug } from "../src/lib/mapInmueble.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = resolve(__dirname, "../dist");
@@ -55,12 +56,18 @@ async function main() {
     { loc: `${BASE_URL}/inmuebles`, priority: "0.9", changefreq: "daily" },
   ];
 
-  const propertyUrls = inmuebles.map((row) => ({
-    loc: `${BASE_URL}/inmuebles/${escapeXml(String(row.id).trim())}`,
-    priority: "0.8",
-    changefreq: "weekly",
-    lastmod: row.fechaPublicacion ? escapeXml(row.fechaPublicacion) : null,
-  }));
+  const propertyUrls = inmuebles.map((row) => {
+    const id = String(row.id).trim();
+    const titulo = String(row.titulo || "").trim();
+    const rawSlug = String(row.slug || "").trim();
+    const slug = rawSlug || generateSlug(titulo, id);
+    return {
+      loc: `${BASE_URL}/inmuebles/${escapeXml(slug)}`,
+      priority: "0.8",
+      changefreq: "weekly",
+      lastmod: row.fechaPublicacion ? escapeXml(row.fechaPublicacion) : null,
+    };
+  });
 
   const allUrls = [...staticUrls, ...propertyUrls];
 

@@ -27,6 +27,18 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
     return `${formatted} €`;
   };
 
+  // Etiqueta legible del tipo de inmueble
+  const tipoLabel = {
+    piso: 'Piso',
+    casa: 'Casa',
+    chalet: 'Chalet',
+    nave: 'Nave',
+    local: 'Local',
+    oficina: 'Oficina',
+    garaje: 'Garaje',
+    terreno: 'Terreno',
+  }[tipo] ?? (tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Inmueble');
+
   // Clase de operación para badge
   const operacionClass = operacion === 'venta' ? 'badge--venta' : 'badge--alquiler';
 
@@ -73,7 +85,7 @@ export const PropertyCard = ({ inmueble, variant = "default" }) => {
       <div className="property-card__body">
         {/* Tipo de propiedad */}
         <span className="property-card__type">
-          {tipo === 'casa' ? 'Casa' : tipo === 'piso' ? 'Piso' : 'Local'}
+          {tipoLabel}
         </span>
 
         {/* Título */}

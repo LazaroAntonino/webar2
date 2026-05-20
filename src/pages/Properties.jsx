@@ -91,9 +91,9 @@ export const Properties = () => {
   const stats = useMemo(() => {
     const ventas = inmuebles.filter(i => i.operacion === 'venta').length;
     const alquileres = inmuebles.filter(i => i.operacion === 'alquiler').length;
-    const pisos = inmuebles.filter(i => i.tipo === 'piso').length;
-    const casas = inmuebles.filter(i => i.tipo === 'casa').length;
-    return { ventas, alquileres, pisos, casas, total: inmuebles.length };
+    // Viviendas = pisos + casas + chalets (todo uso residencial)
+    const viviendas = inmuebles.filter(i => ['piso', 'casa', 'chalet'].includes(i.tipo)).length;
+    return { ventas, alquileres, viviendas, total: inmuebles.length };
   }, [inmuebles]);
 
   // Scroll to top on mount
@@ -112,7 +112,7 @@ export const Properties = () => {
   const itemListLd = inmueblesFiltrados.slice(0, 20).map((p, i) => ({
     "@type": "ListItem",
     "position": i + 1,
-    "url": `https://ar2house.com/inmuebles/${p.id}`,
+    "url": `https://ar2house.com/inmuebles/${p.slug || p.id}`,
     "name": p.titulo,
     ...(p.imagenes?.[0] ? { "image": p.imagenes[0] } : {}),
   }));
@@ -173,7 +173,7 @@ export const Properties = () => {
             </div>
             <div className="stat-item">
               <House size={20} weight="bold" />
-              <span><strong>{stats.casas + stats.pisos}</strong> viviendas</span>
+              <span><strong>{stats.viviendas}</strong> viviendas</span>
             </div>
           </div>
           )}

@@ -39,12 +39,15 @@ if (issues.length) {
   console.log("✓ All " + data.length + " inmuebles pass data quality checks");
 }
 
-// Also check that all detail page HTML files exist for all IDs
+// Also check that all detail page HTML files exist for all slugs (the app routes by slug)
 import { existsSync } from "fs";
 let missingPages = [];
 for (const p of data) {
-  if (!existsSync("dist/inmuebles/" + p.id + "/index.html")) {
-    missingPages.push("dist/inmuebles/" + p.id + "/index.html MISSING");
+  // The app routes by slug, falling back to id — check both
+  const slugPath = "dist/inmuebles/" + p.slug + "/index.html";
+  const idPath = "dist/inmuebles/" + p.id + "/index.html";
+  if (!existsSync(slugPath) && !existsSync(idPath)) {
+    missingPages.push(slugPath + " (and id fallback) MISSING");
   }
 }
 if (missingPages.length) {

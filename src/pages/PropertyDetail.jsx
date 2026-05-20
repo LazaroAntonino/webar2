@@ -253,6 +253,18 @@ export const PropertyDetail = () => {
     agente
   } = inmueble;
 
+  // Etiqueta legible del tipo de inmueble
+  const tipoLabel = {
+    piso: 'Piso',
+    casa: 'Casa',
+    chalet: 'Chalet',
+    nave: 'Nave',
+    local: 'Local',
+    oficina: 'Oficina',
+    garaje: 'Garaje',
+    terreno: 'Terreno',
+  }[tipo] ?? (tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Inmueble');
+
   // Formatear precio
   const formatPrecio = (precio, tipo) => {
     const formatted = new Intl.NumberFormat('es-ES').format(precio);
@@ -309,7 +321,7 @@ export const PropertyDetail = () => {
     { icon: Bathtub, label: "Baños", value: caracteristicas.banos, show: true },
     { icon: Ruler, label: "Superficie", value: `${caracteristicas.metrosConstruidos} m²`, show: true },
     { icon: ArrowsOut, label: "M² útiles", value: `${caracteristicas.metrosUtiles} m²`, show: true },
-    { icon: Buildings, label: "Planta", value: caracteristicas.planta === 0 ? "Bajo" : `${caracteristicas.planta}ª`, show: tipo !== 'casa' },
+    { icon: Buildings, label: "Planta", value: caracteristicas.planta === 0 ? "Bajo" : `${caracteristicas.planta}ª`, show: !['casa', 'chalet', 'nave', 'terreno'].includes(tipo) },
     { icon: Sun, label: "Orientación", value: caracteristicas.orientacion?.charAt(0).toUpperCase() + caracteristicas.orientacion?.slice(1), show: !!caracteristicas.orientacion },
     { icon: Car, label: "Garaje", value: `${caracteristicas.plazasGaraje} plaza${caracteristicas.plazasGaraje > 1 ? 's' : ''}`, show: caracteristicas.garaje },
     { icon: Drop, label: "Piscina", value: "Sí", show: caracteristicas.piscina },
@@ -473,7 +485,7 @@ export const PropertyDetail = () => {
           <p className="property-eyebrow">
             <span className="property-eyebrow__line" aria-hidden="true" />
             <span className="property-eyebrow__text">
-              {tipo === 'casa' ? 'Casa' : tipo === 'piso' ? 'Piso' : 'Local'} en {operacion}
+              {tipoLabel} en {operacion}
             </span>
             <span className="property-eyebrow__line property-eyebrow__line--right" aria-hidden="true" />
           </p>

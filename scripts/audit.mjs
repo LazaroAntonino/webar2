@@ -1,16 +1,24 @@
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync, existsSync } from "fs";
 import { join } from "path";
 
 const dist = "/Users/antoninolazaro/Programacion/Webar2/dist";
+const inmueblesDist = join(dist, "inmuebles");
+
+// Leer los slugs reales del build — no asumir IDs numéricos
+const detailSlugs = existsSync(inmueblesDist)
+  ? readdirSync(inmueblesDist, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => d.name)
+      .slice(0, 5)
+  : [];
 
 const pages = [
   { file: "index.html", url: "https://ar2house.com/" },
   { file: "inmuebles/index.html", url: "https://ar2house.com/inmuebles" },
-  { file: "inmuebles/1/index.html", url: "https://ar2house.com/inmuebles/1" },
-  { file: "inmuebles/2/index.html", url: "https://ar2house.com/inmuebles/2" },
-  { file: "inmuebles/3/index.html", url: "https://ar2house.com/inmuebles/3" },
-  { file: "inmuebles/4/index.html", url: "https://ar2house.com/inmuebles/4" },
-  { file: "inmuebles/5/index.html", url: "https://ar2house.com/inmuebles/5" },
+  ...detailSlugs.map(slug => ({
+    file: `inmuebles/${slug}/index.html`,
+    url: `https://ar2house.com/inmuebles/${slug}`,
+  })),
 ];
 
 let issues = [];
@@ -55,7 +63,7 @@ for (const p of pages) {
   // og:type — detail pages use article, others use website
   const ogTypeM = html.match(/property="og:type" content="([^"]+)"/);
   if (ogTypeM) {
-    const isDetail = f.match(/inmuebles\/\d+\/index\.html/);
+    const isDetail = f.match(/inmuebles\/.+\/index\.html/);
     const expectedType = isDetail ? "article" : "website";
     check(ogTypeM[1] === expectedType, `og:type="${expectedType}" (got ${ogTypeM[1]})`, f);
   }

@@ -54,8 +54,8 @@ export const mapRowToInmueble = (row) => {
     slug,
     mostrarEnWeb: parseBoolean(row.mostrarenweb),
     titulo,
-    tipo: row.tipo || "piso",
-    operacion: row.operacion || "venta",
+    tipo: (row.tipo || "piso").toString().trim().toLowerCase(),
+    operacion: (row.operacion || "venta").toString().trim().toLowerCase(),
     precio: parseNumber(row.precio),
 
     ubicacion: {
@@ -89,7 +89,7 @@ export const mapRowToInmueble = (row) => {
 
     destacado: parseBoolean(row.destacado),
     nuevo: parseBoolean(row.nuevo),
-    precioTipo: (row.operacion || "").trim().toLowerCase() === "alquiler" ? "mes" : "venta",
+    precioTipo: (row.operacion || "").toString().trim().toLowerCase() === "alquiler" ? "mes" : "venta",
 
     descripcion: row.descripcion || "",
     descripcionCorta: row.descripcionCorta || "",
@@ -100,6 +100,8 @@ export const mapRowToInmueble = (row) => {
       nombre: row.agente_nombre || "",
       telefono: row.agente_telefono || "",
       email: row.agente_email || "",
+      foto: row.agente_foto || "",
+      idiomas: row.agente_idiomas || "",
     },
   };
 };

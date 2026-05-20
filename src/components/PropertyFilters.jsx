@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MagnifyingGlass, SlidersHorizontal, X, CaretDown, House, Buildings, Storefront } from "phosphor-react";
+import { MagnifyingGlass, SlidersHorizontal, X, CaretDown, House, Buildings, Storefront, Warehouse, Tree } from "phosphor-react";
 import "./PropertyFilters.css";
 
 const ciudadesDefault = [
@@ -193,6 +193,20 @@ export const PropertyFilters = ({ onFilter, totalResultados, initialOperacion = 
               >
                 <Storefront size={18} />
                 Locales
+              </button>
+              <button 
+                className={`filter-option ${tipo === 'chalet' ? 'active' : ''}`}
+                onClick={() => setTipo('chalet')}
+              >
+                <Tree size={18} />
+                Chalets
+              </button>
+              <button 
+                className={`filter-option ${tipo === 'nave' ? 'active' : ''}`}
+                onClick={() => setTipo('nave')}
+              >
+                <Warehouse size={18} />
+                Naves
               </button>
             </div>
           </div>
