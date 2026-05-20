@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MagnifyingGlass, SlidersHorizontal, X, CaretDown, House, Buildings, Storefront, Warehouse, Tree } from "phosphor-react";
+import { MagnifyingGlass, SlidersHorizontal, X, CaretDown, House, Buildings, Storefront, Factory, Tree } from "phosphor-react";
 import "./PropertyFilters.css";
 
 const ciudadesDefault = [
@@ -205,7 +205,7 @@ export const PropertyFilters = ({ onFilter, totalResultados, initialOperacion = 
                 className={`filter-option ${tipo === 'nave' ? 'active' : ''}`}
                 onClick={() => setTipo('nave')}
               >
-                <Warehouse size={18} />
+                <Factory size={18} />
                 Naves
               </button>
             </div>
