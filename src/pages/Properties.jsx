@@ -5,7 +5,9 @@ import { Footer } from "../components/Footer";
 import { PropertyCard } from "../components/PropertyCard";
 import { PropertyFilters } from "../components/PropertyFilters";
 import { House, Buildings, TrendUp, CaretRight } from "phosphor-react";
-import { useInmuebles, LoadingSpinner, ErrorMessage } from "../hooks/useInmuebles";
+import { useInmuebles } from "../hooks/useInmuebles";
+import { LoadingSpinner } from "../components/LoadingSpinner";
+import { ErrorMessage } from "../components/ErrorMessage";
 import SEO from "../components/SEO";
 import "./Properties.css";
 

@@ -4,7 +4,6 @@ import "./PropertyCard.css";
 
 export const PropertyCard = ({ inmueble, variant = "default" }) => {
   const {
-    id,
     titulo,
     tipo,
     operacion,

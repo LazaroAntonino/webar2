@@ -25,7 +25,9 @@ import {
   NavigationArrow,
   X
 } from "phosphor-react";
-import { useInmuebles, LoadingSpinner, ErrorMessage } from "../hooks/useInmuebles";
+import { useInmuebles } from "../hooks/useInmuebles";
+import { LoadingSpinner } from "../components/LoadingSpinner";
+import { ErrorMessage } from "../components/ErrorMessage";
 import "./PropertyDetail.css";
 
 export const PropertyDetail = () => {

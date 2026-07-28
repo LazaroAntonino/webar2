@@ -1,0 +1,69 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode-go/kimi-k2.7-code",
+  "small_model": "opencode-go/kimi-k2.7-code",
+  "default_agent": "build",
+  "username": "Antony",
+  "snapshot": true,
+  "autoupdate": "notify",
+  "share": "manual",
+  "logLevel": "INFO",
+
+  "agent": {
+    "build": {
+      "description": "Agente principal de desarrollo. Usa para todas las tareas de código.",
+      "mode": "primary",
+      "model": "opencode-go/kimi-k2.7-code"
+    },
+    "coder": {
+      "description": "Especialista en escritura y refactorización de código React/JavaScript",
+      "mode": "subagent",
+      "model": "opencode-go/kimi-k2.7-code"
+    },
+    "reviewer": {
+      "description": "Especialista en revisión de código y detección de errores",
+      "mode": "subagent",
+      "model": "opencode-go/kimi-k2.7-code"
+    }
+  },
+
+  "permission": {
+    "edit": "allow",
+    "bash": {
+      "git *": "allow",
+      "npm *": "allow",
+      "node *": "allow",
+      "npx *": "allow",
+      "*": "ask"
+    },
+    "read": "allow",
+    "todowrite": "allow"
+  },
+
+  "formatter": {
+    "eslint": {
+      "disabled": false,
+      "command": ["npx", "eslint"],
+      "extensions": [".js", ".jsx"]
+    }
+  },
+
+  "compaction": {
+    "auto": true,
+    "tail_turns": 5,
+    "preserve_recent_tokens": 3000
+  },
+
+  "tool_output": {
+    "max_lines": 500,
+    "max_bytes": 102400
+  },
+
+  "instructions": [
+    ".opencode/AGENTS.md"
+  ],
+
+  "skills": {
+    "paths": [".opencode/skills"]
+  }
+}

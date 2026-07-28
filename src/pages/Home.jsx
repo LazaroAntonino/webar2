@@ -5,7 +5,8 @@ import { MainNavbar } from "../components/MainNavbar";
 import { Footer } from "../components/Footer";
 import { ValuationModal } from "../components/ValuationModal";
 import { PropertyCard } from "../components/PropertyCard";
-import { useInmuebles, LoadingSpinner } from "../hooks/useInmuebles";
+import { useInmuebles } from "../hooks/useInmuebles";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import SEO from "../components/SEO";
 
 import {

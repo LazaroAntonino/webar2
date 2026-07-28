@@ -5,7 +5,7 @@ import { GOOGLE_SHEETS_CSV_URL, mapRowToInmueble } from "./mapInmueble.js";
 
 export async function fetchAllInmuebles() {
   const res = await fetch(GOOGLE_SHEETS_CSV_URL);
-  if (!res.ok) throw new Error(`CSV fetch error: ${res.status}`);
+  if (!res.ok) throw new Error(`Error al cargar datos: ${res.status} ${res.statusText}`);
   const csvText = await res.text();
   return new Promise((resolve, reject) => {
     Papa.parse(csvText, {
@@ -13,14 +13,14 @@ export async function fetchAllInmuebles() {
       skipEmptyLines: true,
       transformHeader: (h) => h.trim(),
       complete: ({ data, errors }) => {
-        if (errors.length) console.warn("[fetchInmuebles] warnings:", errors);
+        if (errors.length) console.warn("Advertencias al parsear CSV:", errors);
         const inmuebles = data
           .filter((row) => row.id && String(row.id).trim() !== "")
           .map(mapRowToInmueble)
           .filter((p) => p.mostrarEnWeb);
         resolve(inmuebles);
       },
-      error: (err) => reject(new Error(err.message)),
+      error: (err) => reject(new Error(`Error al parsear CSV: ${err.message}`)),
     });
   });
 }
