@@ -5,6 +5,7 @@ import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import Papa from "papaparse";
 import { generateSlug } from "../src/lib/mapInmueble.js";
+import { getAllLandingSlugs } from "../src/data/landings/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = resolve(__dirname, "../dist");
@@ -42,6 +43,28 @@ function escapeXml(str) {
     .replace(/>/g, "&gt;");
 }
 
+function toISODate(value) {
+  if (!value) return null;
+
+  // Fecha serial de Google Sheets (número de días desde 30/12/1899)
+  if (typeof value === "number" || /^\d+(\.\d+)?$/.test(String(value).trim())) {
+    const serial = Number(value);
+    const ms = (serial - 25569) * 24 * 60 * 60 * 1000;
+    const date = new Date(ms);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().split("T")[0];
+    }
+  }
+
+  // Fechas en formato ISO o legible
+  const parsed = new Date(value);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toISOString().split("T")[0];
+  }
+
+  return null;
+}
+
 async function main() {
   let inmuebles = [];
   try {
@@ -56,6 +79,12 @@ async function main() {
     { loc: `${BASE_URL}/inmuebles`, priority: "0.9", changefreq: "daily" },
   ];
 
+  const landingUrls = getAllLandingSlugs().map((slug) => ({
+    loc: `${BASE_URL}/${slug}`,
+    priority: "0.7",
+    changefreq: "monthly",
+  }));
+
   const propertyUrls = inmuebles.map((row) => {
     const id = String(row.id).trim();
     const titulo = String(row.titulo || "").trim();
@@ -65,11 +94,11 @@ async function main() {
       loc: `${BASE_URL}/inmuebles/${escapeXml(slug)}`,
       priority: "0.8",
       changefreq: "weekly",
-      lastmod: row.fechaPublicacion ? escapeXml(row.fechaPublicacion) : null,
+      lastmod: toISODate(row.fechaPublicacion),
     };
   });
 
-  const allUrls = [...staticUrls, ...propertyUrls];
+  const allUrls = [...staticUrls, ...landingUrls, ...propertyUrls];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

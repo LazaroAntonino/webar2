@@ -7,7 +7,9 @@ import { ValuationModal } from "../components/ValuationModal";
 import { PropertyCard } from "../components/PropertyCard";
 import { useInmuebles } from "../hooks/useInmuebles";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { LandingGuides } from "../components/LandingGuides";
 import SEO from "../components/SEO";
+import { SITE, ORGANIZATION_SCHEMA } from "../data/site.js";
 
 import {
   House,
@@ -76,38 +78,28 @@ export const Home = () => {
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
-            {
-              "@type": "Organization",
-              "@id": "https://ar2house.com/#organization",
-              "name": "AR2 Consulting Inmobiliario",
-              "url": "https://ar2house.com",
-              "logo": "https://ar2house.com/og-image.png",
-              "telephone": "+34640081599",
-              "email": "info@ar2.es",
-              "areaServed": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Málaga", "Jaén"],
-              "sameAs": []
-            },
+            ORGANIZATION_SCHEMA,
             {
               "@type": "RealEstateAgent",
-              "@id": "https://ar2house.com/#agent",
-              "name": "AR2 Consulting Inmobiliario",
-              "url": "https://ar2house.com",
-              "telephone": "+34640081599",
-              "email": "info@ar2.es",
-              "areaServed": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Málaga", "Jaén"]
+              "@id": `${SITE.baseUrl}/#agent`,
+              "name": SITE.name,
+              "url": SITE.baseUrl,
+              "telephone": SITE.phone.replace(/\s/g, ""),
+              "email": SITE.email,
+              "areaServed": ["Madrid", "Barcelona", "Valencia", "Sevilla", "Málaga", "Jaén"],
             },
             {
               "@type": "WebSite",
-              "@id": "https://ar2house.com/#website",
-              "url": "https://ar2house.com",
-              "name": "AR2 Consulting Inmobiliario",
+              "@id": `${SITE.baseUrl}/#website`,
+              "url": SITE.baseUrl,
+              "name": SITE.name,
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": "https://ar2house.com/inmuebles?busqueda={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
-            }
-          ]
+                "target": `${SITE.baseUrl}/inmuebles?busqueda={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              },
+            },
+          ],
         }}
       />
       <MainNavbar onHomeClick={() => typeof window !== 'undefined' && window.scrollTo({ top: 0, behavior: "smooth" })} />
@@ -369,6 +361,9 @@ export const Home = () => {
             ))}
           </div>
         </section>
+
+        {/* ================= GUÍAS INMOBILIARIAS ================= */}
+        <LandingGuides />
 
         {/* ================= CTA FINAL ================= */}
         <section className="cta-final" id="contacto">

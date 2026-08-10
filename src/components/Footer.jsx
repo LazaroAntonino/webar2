@@ -1,23 +1,12 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Phone, EnvelopeSimple, MapPin, InstagramLogo, LinkedinLogo, FacebookLogo } from "phosphor-react";
 import logoBlanco from "../img/LogoAR2BlancoSinFondoSinFooter.png";
+import { SITE } from "../data/site.js";
 import "./Footer.css";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const scrollTo = (id) => {
-    if (location.pathname === '/') {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      navigate('/');
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      }, 180);
-    }
-  };
+  const phoneHref = `tel:${SITE.phone.replace(/\s/g, "")}`;
 
   return (
     <footer className="footer">
@@ -33,14 +22,14 @@ export const Footer = () => {
               Expertos en consultoría inmobiliaria premium. Te acompañamos en la compra, venta o alquiler de tu propiedad con un servicio personalizado y de máxima confianza.
             </p>
             <div className="footer__social">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <InstagramLogo size={22} weight="regular" />
+              <a href={SITE.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <InstagramLogo size={22} weight="regular" aria-hidden="true" />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <LinkedinLogo size={22} weight="regular" />
+              <a href={SITE.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <LinkedinLogo size={22} weight="regular" aria-hidden="true" />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                <FacebookLogo size={22} weight="regular" />
+              <a href={SITE.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <FacebookLogo size={22} weight="regular" aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -56,32 +45,45 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* COLUMNA 3: SERVICIOS */}
+          {/* COLUMNA 3: GUÍAS */}
           <div className="footer__nav">
-            <h4>Servicios</h4>
+            <h4>Guías</h4>
             <ul>
-              <li><a href="/#nosotros" onClick={(e) => { e.preventDefault(); scrollTo('nosotros'); }}>Sobre nosotros</a></li>
-              <li><a href="/#testimonios" onClick={(e) => { e.preventDefault(); scrollTo('testimonios'); }}>Opiniones</a></li>
-              <li><Link to="/">Valoración gratuita</Link></li>
-              <li><a href="/#contacto" onClick={(e) => { e.preventDefault(); scrollTo('contacto'); }}>Contacto</a></li>
+              <li><Link to="/tasacion-gratuita-vivienda-madrid">Tasación gratuita</Link></li>
+              <li><Link to="/valorar-chalet-madrid">Valorar un chalet</Link></li>
+              <li><Link to="/alquiler-o-compra-madrid">¿Alquilar o comprar?</Link></li>
+              <li><Link to="/comprar-casa-madrid-extranjeros">Comprar siendo extranjero</Link></li>
             </ul>
           </div>
 
-          {/* COLUMNA 4: CONTACTO */}
+          {/* COLUMNA 4: ZONAS */}
+          <div className="footer__nav">
+            <h4>Zonas</h4>
+            <ul>
+              <li><Link to="/cuanto-vale-una-casa/las-rozas">Las Rozas</Link></li>
+              <li><Link to="/cuanto-vale-una-casa/pozuelo-de-alarcon">Pozuelo de Alarcón</Link></li>
+              <li><Link to="/cuanto-vale-una-casa/majadahonda">Majadahonda</Link></li>
+              <li><Link to="/cuanto-vale-una-casa/chamberi">Chamberí</Link></li>
+              <li><Link to="/cuanto-vale-una-casa/salamanca">Salamanca</Link></li>
+              <li><Link to="/cuanto-vale-una-casa/el-escorial">El Escorial</Link></li>
+            </ul>
+          </div>
+
+          {/* COLUMNA 5: CONTACTO */}
           <div className="footer__contact">
             <h4>Contacto</h4>
             <ul>
               <li>
-                <Phone size={18} weight="regular" />
-                <a href="tel:+34640081599">+34 640 08 15 99</a>
+                <Phone size={18} weight="regular" aria-hidden="true" />
+                <a href={phoneHref}>{SITE.phone}</a>
               </li>
               <li>
-                <EnvelopeSimple size={18} weight="regular" />
-                <a href="mailto:info@ar2.es">info@ar2.es</a>
+                <EnvelopeSimple size={18} weight="regular" aria-hidden="true" />
+                <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
               </li>
               <li>
-                <MapPin size={18} weight="regular" />
-                <span>Madrid, Barcelona, Valencia</span>
+                <MapPin size={18} weight="regular" aria-hidden="true" />
+                <span>{SITE.location}</span>
               </li>
             </ul>
           </div>
@@ -96,14 +98,16 @@ export const Footer = () => {
             © {currentYear} AR2 Consulting Inmobiliario. Todos los derechos reservados.
           </p>
           <div className="footer__legal">
-            <a href="/privacidad">Política de privacidad</a>
+            <Link to="/aviso-legal">Aviso legal</Link>
             <span>·</span>
-            <a href="/aviso-legal">Aviso legal</a>
+            <Link to="/privacidad">Privacidad</Link>
             <span>·</span>
-            <a href="/cookies">Cookies</a>
+            <Link to="/cookies">Cookies</Link>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+
+export default Footer;
