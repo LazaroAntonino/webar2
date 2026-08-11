@@ -1,7 +1,9 @@
 import { readFileSync, readdirSync, existsSync } from "fs";
-import { join } from "path";
+import { join, dirname, resolve } from "path";
+import { fileURLToPath } from "url";
 
-const dist = "/Users/antoninolazaro/Programacion/Webar2/dist";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const dist = resolve(__dirname, "..", "dist");
 const inmueblesDist = join(dist, "inmuebles");
 
 // Leer los slugs reales del build — no asumir IDs numéricos
