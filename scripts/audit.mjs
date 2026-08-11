@@ -9,7 +9,6 @@ const detailSlugs = existsSync(inmueblesDist)
   ? readdirSync(inmueblesDist, { withFileTypes: true })
       .filter(d => d.isDirectory())
       .map(d => d.name)
-      .slice(0, 5)
   : [];
 
 const pages = [
@@ -126,6 +125,8 @@ check(robots.includes("Allow: /"), "robots has Allow /", "robots.txt");
 console.log(`\nPassed: ${passed}  Issues: ${issues.length}`);
 if (issues.length > 0) {
   console.log("\nISSUES:\n" + issues.join("\n"));
+  // Falla el build: una página sin SEO (prerender vacío) no debe publicarse.
+  process.exit(1);
 } else {
   console.log("✓ All checks passed!");
 }

@@ -2,20 +2,19 @@
 // Centraliza contacto, URL base y datos de Organization para JSON-LD.
 
 export const SITE = {
-  name: "AR2 Consulting Inmobiliario",
-  legalName: "AR2 Consulting Inmobiliario S.L.",
-  // TODO legal (LSSI-CE art. 10): rellenar cuando estén disponibles.
-  cif: "", // p.ej. "B12345678"
+  name: "AR2 Consulting Inmobiliario", // marca comercial (para mostrar)
+  legalName: "Promociones Inmobiliarias Citicasa S.L.", // sociedad titular (aviso legal + schema)
+  cif: "B83706762",
   address: {
-    street: "", // calle y número
-    postalCode: "",
-    city: "",
+    street: "Calle Flores, 7 (esquina a Calle Esperanza)",
+    postalCode: "28231",
+    city: "Las Rozas de Madrid",
     region: "Madrid",
     country: "ES",
   },
   baseUrl: "https://ar2house.com",
   phone: "+34 640 08 15 99",
-  email: "info@r2house.com",
+  email: "info@ar2house.com",
   location: "Madrid, Barcelona, Valencia",
   social: {
     instagram: "https://instagram.com/ar2consulting",
@@ -29,7 +28,7 @@ const postalAddress = SITE.address.street
   ? {
       "@type": "PostalAddress",
       streetAddress: SITE.address.street,
-      postalCode: SITE.address.postalCode,
+      ...(SITE.address.postalCode ? { postalCode: SITE.address.postalCode } : {}),
       addressLocality: SITE.address.city,
       addressRegion: SITE.address.region,
       addressCountry: SITE.address.country,

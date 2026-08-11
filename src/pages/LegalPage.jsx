@@ -13,12 +13,12 @@ const CONTENT = {
       {
         title: "1. Datos identificativos",
         text: `El presente sitio web es titularidad de ${SITE.legalName}${
-          SITE.cif ? `, con CIF ${SITE.cif}` : ""
+          SITE.cif ? `, con NIF ${SITE.cif}` : ""
         }${
           SITE.address.street
-            ? ` y domicilio en ${SITE.address.street}, ${SITE.address.postalCode} ${SITE.address.city} (${SITE.address.region})`
+            ? ` y domicilio en ${[SITE.address.street, [SITE.address.postalCode, SITE.address.city].filter(Boolean).join(" "), SITE.address.region && `(${SITE.address.region})`].filter(Boolean).join(", ")}`
             : ""
-        }. Puedes contactar con nosotros a través del teléfono ${SITE.phone} o del correo electrónico ${SITE.email}.`,
+        }, que opera bajo la marca comercial ${SITE.name}. Puedes contactar con nosotros a través del teléfono ${SITE.phone} o del correo electrónico ${SITE.email}.`,
       },
       {
         title: "2. Condiciones de uso",
