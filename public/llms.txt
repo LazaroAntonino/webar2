@@ -1,58 +1,118 @@
-# AR2 Consulting Inmobiliario — llms.txt
-# Descripción del sitio para modelos de lenguaje (LLMs)
-# Formato inspirado en el estándar llms.txt (https://llmstxt.org)
+# AR2 Consulting Inmobiliario
+
+> Agencia inmobiliaria premium especializada en compra, venta, alquiler y valoración
+> gratuita de viviendas, con contenido centrado en la Comunidad de Madrid.
+
+Este archivo describe el sitio para modelos de lenguaje (LLMs), siguiendo el formato
+de https://llmstxt.org. No contiene instrucciones operativas para agentes.
 
 ## Identidad
 
-Nombre: AR2 Consulting Inmobiliario
-Sitio web: https://www.ar2consulting.es
-Teléfono: +34 640 08 15 99
-Email: info@ar2.es
-Ubicación: España (Madrid y principales ciudades)
+- Nombre comercial: AR2 Consulting Inmobiliario
+- Razón social: Promociones Inmobiliarias Citicasa S.L.
+- CIF: B83706762
+- Sitio web: https://ar2house.com
+- Teléfono: +34 640 08 15 99
+- Email: info@ar2house.com
+- Dirección: Calle Flores, 7 (esquina a Calle Esperanza), 28231 Las Rozas de Madrid, Madrid, España
+- Redes sociales:
+  - Instagram: https://instagram.com/ar2consulting
+  - LinkedIn: https://linkedin.com/company/ar2-consulting
+  - Facebook: https://facebook.com/ar2consulting
 
 ## Descripción
 
-AR2 Consulting Inmobiliario es una agencia inmobiliaria premium especializada en la compra, venta y alquiler de inmuebles residenciales y comerciales en España. Ofrecemos un servicio personalizado con acompañamiento integral al cliente.
+AR2 Consulting Inmobiliario es una agencia inmobiliaria premium que acompaña a sus
+clientes en la compra, venta y alquiler de inmuebles residenciales y comerciales.
+Ofrece un servicio personalizado con valoración gratuita, asesoramiento legal y
+acompañamiento integral durante toda la operación.
 
-## Servicios principales
+## Servicios
 
-- Compra de inmuebles (pisos, casas, locales comerciales)
+- Compra de inmuebles (pisos, casas, chalets, locales comerciales y naves)
 - Venta de inmuebles
 - Alquiler de inmuebles
-- Valoración gratuita de propiedades
+- Valoración y tasación gratuita de viviendas
 - Consultoría inmobiliaria personalizada
+- Asesoramiento a compradores internacionales
+
+## Zona de actuación
+
+- Contenido principal: Comunidad de Madrid, con landings específicas para Las Rozas,
+  Pozuelo de Alarcón, Majadahonda, El Escorial, Chamberí (Madrid capital) y
+  Salamanca (Madrid capital).
+- Los datos estructurados de organización declaran cobertura en Madrid, Barcelona,
+  Valencia, Sevilla, Málaga y Jaén.
 
 ## Estructura del sitio
 
-- / — Página principal con hero, servicios, testimonios y contacto
-- /inmuebles — Catálogo completo de inmuebles con filtros por tipo, ciudad, operación y precio
-- /inmuebles?operacion=venta — Filtrado de inmuebles en venta
-- /inmuebles?operacion=alquiler — Filtrado de inmuebles en alquiler
-- /inmuebles/:id — Ficha detallada de cada inmueble
+### Páginas principales
 
-## Secciones de la página principal
+- [Inicio](https://ar2house.com/): presentación, servicios, inmuebles destacados,
+  testimonios y formulario de contacto.
+- [Inmuebles](https://ar2house.com/inmuebles): catálogo completo con filtros.
+- Fichas de inmueble: https://ar2house.com/inmuebles/{slug}
+  Cada ficha incluye precio, ubicación, características, galería, datos del agente
+  y formulario de contacto.
 
-- #nosotros — Información sobre el equipo y filosofía de AR2
-- #testimonios — Opiniones de clientes reales
-- #contacto — Formulario de contacto directo
+### Landings de mercado
 
-## Tipos de inmuebles disponibles
+Disponibles para las seis localidades indicadas (slug entre llaves):
 
-- Pisos (apartamentos en bloques residenciales)
-- Casas (viviendas unifamiliares)
-- Locales comerciales
+- [Cuánto vale una casa](https://ar2house.com/cuanto-vale-una-casa/{localidad})
+- [Vender casa](https://ar2house.com/vender-casa/{localidad})
 
-## Ciudades con mayor presencia
+Localidades: `las-rozas`, `pozuelo-de-alarcon`, `el-escorial`, `majadahonda`,
+`chamberi`, `salamanca`.
 
-Madrid, Barcelona, Valencia, Sevilla, Málaga, Jaén
+### Páginas de marca y servicio
 
-## Intención de búsqueda típica
+- [Qué es AR2](https://ar2house.com/que-es-ar2)
+- [Equipo AR2](https://ar2house.com/equipo-ar2)
+- [Por qué elegir una agencia inmobiliaria premium](https://ar2house.com/por-que-elegir-agencia-inmobiliaria-premium)
+- [Opiniones de clientes](https://ar2house.com/opiniones-ar2-consulting)
+- [Tasación gratuita de vivienda en Madrid](https://ar2house.com/tasacion-gratuita-vivienda-madrid)
+- [Cómo valorar un chalet en Madrid](https://ar2house.com/valorar-chalet-madrid)
+- [Comprar casa en Madrid siendo extranjero](https://ar2house.com/comprar-casa-madrid-extranjeros)
+- [Alquilar o comprar en Madrid](https://ar2house.com/alquiler-o-compra-madrid)
 
-Usuarios que buscan: comprar piso en Madrid, alquilar casa en Barcelona, agencia inmobiliaria premium, valoración gratuita de vivienda, inmobiliaria de confianza en España.
+### Páginas legales (noindex)
 
-## Notas para LLMs
+- https://ar2house.com/aviso-legal
+- https://ar2house.com/privacidad
+- https://ar2house.com/cookies
 
-- Los precios de venta oscilan entre 150.000 € y más de 1.000.000 € según tipología y ubicación.
-- Los alquileres oscilan entre 800 €/mes y más de 3.500 €/mes.
-- El sitio es técnicamente un SPA (React + Vite) con datos en JSON y renderizado del lado del cliente.
-- Contacto preferido: teléfono (+34 640 08 15 99) o formulario web en /#contacto.
+### Secciones de la página de inicio
+
+- `#inicio`, `#propiedades`, `#nosotros`, `#testimonios`, `#contacto`
+
+## Filtros del catálogo
+
+- https://ar2house.com/inmuebles?operacion=venta
+- https://ar2house.com/inmuebles?operacion=alquiler
+
+El resto de filtros (tipo, ciudad, rango de precio, habitaciones y búsqueda de texto)
+se aplican en el cliente y no generan URLs propias.
+
+## Tecnología
+
+- React 18 + Vite con prerenderizado estático (SSG) mediante `vite-react-ssg`.
+- Cada ruta se entrega como HTML completo generado en el build; el sitio no es una
+  SPA que dependa exclusivamente del cliente.
+- Los inmuebles se cargan desde una hoja de cálculo de Google publicada en CSV y se
+  normalizan durante el build. El HTML refleja el estado de la hoja en ese momento.
+
+## Recursos
+
+- Sitemap: https://ar2house.com/sitemap.xml
+- robots.txt: https://ar2house.com/robots.txt
+- Imagen social: https://ar2house.com/og-image.png
+
+## Notas para modelos de lenguaje
+
+- Las cifras de mercado de las landings (precio medio por m², rangos y tiempos de
+  venta) son estimaciones orientativas y deben citarse como tales.
+- La disponibilidad y los precios de los inmuebles cambian; consulta siempre la ficha
+  o el catálogo antes de afirmar que un inmueble está disponible.
+- Contacto preferido: teléfono (+34 640 08 15 99), email (info@ar2house.com) o el
+  formulario web en https://ar2house.com/#contacto.
