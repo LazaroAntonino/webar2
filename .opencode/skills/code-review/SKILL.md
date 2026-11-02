@@ -1,71 +1,43 @@
 ---
 name: code-review
-description: Revisar código JavaScript/React para detectar errores, bugs y mejoras. Usar después de escribir código o cuando se pida revisión.
+description: Revisa código para reportar bugs, riesgos y mejoras sin editar. Usar cuando se pida revisión o tras detectar comportamiento inesperado.
 ---
 
-# Code Review Skill
+# Code Review
 
-## Cuándo Usar
+En modo revisión solo reportar hallazgos; devolver las correcciones al implementador.
+Una petición de corregir no elimina los permisos de solo lectura del agente reviewer.
+Prioridad: bugs reproducibles > riesgos funcionales > preferencias de estilo.
+Cada observación debe ser accionable y estar fundamentada en evidencia.
 
-- Después de escribir código nuevo
-- Antes de hacer commit
-- Cuando se detecten comportamientos inesperados
-- Petición explícita de "revisa este código"
+## Formato de hallazgo
 
-## Proceso de Revisión
+Para cada observación incluir:
 
-### 1. Revisión de Sintaxis
-- Verificar paréntesis, llaves, corchetes balanceados
-- Confirmar tags JSX cerrados correctamente
-- Validar imports/exports
+- Archivo y líneas verificadas.
+- Escenario concreto o input que lo dispare.
+- Evidencia: código concreto, error, traza o comportamiento observado; no inventar una ejecución.
+- Severidad: P1 (importante), P2 (acotado/condicional), P3 (opcional).
+- Confianza: alta / media / baja.
 
-### 2. Revisión de Lógica React
-- `useState` con valor inicial correcto
-- `useEffect` con dependencias apropiadas
-- Cleanup functions cuando corresponde
-- Avoid mental renders
+## Focos de revisión
 
-### 3. Revisión de Best Practices
-- No usar `any` sin justificación
-- Props con default values
-- Error boundaries donde sea necesario
-- Loading states apropiados
+- React: dependencias reales de `useEffect` (`useState` no recibe un array de dependencias);
+  operaciones asíncronas con manejo de errores donde corresponda.
+- SSR e hidratación: inconsistencias entre servidor y cliente, uso seguro de `window`/`document`.
+- Seguridad del backend: validación de entradas, escapes, headers y permisos.
+- Performance: no sugerir `useMemo` por dogma; exigir evidencia de cuello de botella.
 
-### 4. Checklist de Errores Comunes
+## Qué evitar
 
-```
-[ ] ¿Los componentes tienen valores iniciales para useState?
-[ ] ¿Los useEffect tienen array de dependencias correcto?
-[ ] ¿Se limpian subscriptions en cleanup?
-[ ] ¿Hay console.log de debug?
-[ ] ¿Hay imports faltantes?
-[ ] ¿Los handlers de eventos tienen e.preventDefault()?
-[ ] ¿Las funciones async tienen try/catch?
-[ ] ¿Los optional chaining están bien usados?
-```
+- `preventDefault()` universal en todos los handlers.
+- Cambios de estilo sin justificación funcional.
+- Corregir código directamente; proponer la corrección en el reporte.
+- Reportar preferencias personales como errores.
 
-## Ejemplo de Output
+## Ejemplo de reporte breve
 
 ```markdown
-## Code Review: PropertyDetail.jsx
-
-### ✅ Correcto
-- Componente funcional con hooks
-- useState inicializado correctamente
-- useEffect con dependencias
-
-### ⚠️ Mejoras
-- Linea 45: Considerar usar useMemo para cálculo expensive
-- Linea 78: Falta validación de prop `id`
-
-### ❌ Errores
-- Linea 112: `items.map` sin verificación de null
-- Linea 156: useEffect missing dependency: `fetchData`
+- [P2] archivo:líneas — título. Al ocurrir [condición], [código observado] provoca
+  [impacto]. Evidencia: [referencia]. Confianza: [nivel]. Corrección sugerida: [acción].
 ```
-
-## Reglas
-
-1. Si encuentras errores CRÍTICOS, corrígelos INMEDIATAMENTE
-2. Sugiere mejoras pero no Reescribas código sin necesidad
-3. Prioriza: errores > warnings > mejoras
-4. Explica el "por qué" de cada observación

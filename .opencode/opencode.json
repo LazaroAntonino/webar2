@@ -9,44 +9,75 @@
   "share": "manual",
   "logLevel": "INFO",
 
-  "agent": {
-    "build": {
-      "description": "Agente principal de desarrollo. Usa para todas las tareas de código.",
-      "mode": "primary",
-      "model": "opencode-go/kimi-k2.7-code"
-    },
-    "coder": {
-      "description": "Especialista en escritura y refactorización de código React/JavaScript",
-      "mode": "subagent",
-      "model": "opencode-go/kimi-k2.7-code"
-    },
-    "reviewer": {
-      "description": "Especialista en revisión de código y detección de errores",
-      "mode": "subagent",
-      "model": "opencode-go/kimi-k2.7-code"
-    }
-  },
-
   "permission": {
-    "edit": "allow",
-    "bash": {
-      "git *": "allow",
-      "npm *": "allow",
-      "node *": "allow",
-      "npx *": "allow",
-      "*": "ask"
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*service-account*.json": "deny",
+      "*credentials*.json": "deny",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny"
     },
-    "read": "allow",
-    "todowrite": "allow"
+    "edit": {
+      "*": "allow",
+      ".opencode/*": "ask",
+      "*/.opencode/*": "ask",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*service-account*.json": "deny",
+      "*credentials*.json": "deny",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny",
+      ".git/*": "deny",
+      "*/.git/*": "deny",
+      "node_modules/*": "deny",
+      "*/node_modules/*": "deny",
+      "dist/*": "deny",
+      "*/dist/*": "deny"
+    },
+    "bash": {
+      "*": "ask",
+      "git status": "allow",
+      "git status --short": "allow",
+      "git diff --no-ext-diff": "allow",
+      "git diff --no-ext-diff --stat": "allow",
+      "git diff --no-ext-diff --check": "allow",
+      "git diff --no-ext-diff --cached": "allow",
+      "git log --oneline -10": "allow",
+      "git ls-files": "allow",
+      "npm run lint": "allow",
+      "npm run build": "allow",
+      "npm run audit": "allow",
+      "node --check server/server.js": "allow",
+      "node .opencode/scripts/validate.mjs": "allow",
+      "node --test .opencode/tests/config.test.mjs": "allow",
+      "git reset --hard*": "deny",
+      "git clean -f*": "deny",
+      "git push --force*": "deny",
+      "git push -f*": "deny"
+    },
+    "task": {
+      "*": "deny",
+      "explore": "allow",
+      "coder": "allow",
+      "reviewer": "allow",
+      "general": "ask"
+    },
+    "external_directory": "ask",
+    "doom_loop": "ask",
+    "question": "allow",
+    "todowrite": "allow",
+    "skill": "allow"
   },
 
-  "formatter": {
-    "eslint": {
-      "disabled": false,
-      "command": ["npx", "eslint"],
-      "extensions": [".js", ".jsx"]
-    }
-  },
+  "formatter": false,
 
   "compaction": {
     "auto": true,
@@ -61,9 +92,5 @@
 
   "instructions": [
     ".opencode/AGENTS.md"
-  ],
-
-  "skills": {
-    "paths": [".opencode/skills"]
-  }
+  ]
 }

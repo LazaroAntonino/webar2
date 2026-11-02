@@ -1,77 +1,45 @@
 ---
 name: workflow
-description: Workflow de desarrollo y proceso de trabajo. Usar al inicio de cada sesión o cuando se pida seguir el proceso established.
+description: Coordina tareas multipaso, planificación, delegación y verificación global. Usar cuando una tarea requiera dividirse en pasos, asignar archivos o coordinar validaciones finales.
 ---
 
-# Workflow Skill
+# Workflow
 
-## Proceso de Trabajo Estandar
+Aplicar solo cuando el trabajo requiera más de un paso coordinado.
+No usar para tareas de una sola edición o consulta directa.
+Mantener una sola fuente de verdad para el plan, los archivos asignados y las decisiones tomadas.
 
-### Fase 1: Entender el Requerimiento
-1. Escucha/lee el requerimiento completo
-2. Pregunta clarificationes si hay ambigüedad
-3. Identifica los archivos afectados
-4. Define el scope de cambios
+## Planificación
 
-### Fase 2: Analizar el Estado Actual
-1. Lee los archivos existentes relacionados
-2. Identifica patrones y convenciones usados
-3. Verifica dependencias y imports necesarios
-4. Anticipa problemas potenciales
+1. Dividir la tarea en pasos concretos, ordenados y asignables.
+2. Establecer propiedad exclusiva de archivos para evitar ediciones simultáneas.
+3. Identificar dependencias entre pasos y posibles bloqueos.
+4. Comunicar el plan de forma breve.
+5. No pedir confirmación por cada paso rutinario; actuar dentro del alcance autorizado.
 
-### Fase 3: Planificar
-1. Divide en tareas pequeñas y manejables
-2. Establece el orden de implementación
-3. Identifica qué tests/validaciones necesitas
-4. Comunica el plan brevemente
+## Delegación
 
-### Fase 4: Implementar
-1. Trabaja en pasos atómicos
-2. Haz commit incremental si hay cambios significativos
-3. Verifica cada pieza antes de continuar
-4. Mantén el código limpio durante el proceso
+- Delegar a subagentes cuando el paso justifique una propiedad separada o conocimiento especializado.
+- Transferir siempre: alcance autorizado, archivos afectados, decisiones previas y restricciones activas.
+- No delegar tareas triviales que se resuelvan más rápido directamente.
+- El agente principal conserva la propiedad del plan y coordina la integración.
 
-### Fase 5: Validar
-1. Ejecuta `npm run lint` - DEBE pasar
-2. Ejecuta `npm run build` si es necesario
-3. Verifica que el código funciona
-4. Confirma con el usuario
+## Ejecución
 
-## Comandos de Verificación
+- Trabajar en pasos atómicos y verificables.
+- Respetar estrictamente el alcance autorizado; si surge algo fuera de él, reportar sin actuar.
+- Documentar decisiones, cambios de rumbo y restricciones activas para garantizar continuidad.
+- Si un paso falla, informar antes de continuar con los dependientes.
 
-Sempre ejecutar después de cambios:
+## Verificación global
 
-```bash
-# Verificación de sintaxis
-npm run lint
+- Coordinar las validaciones finales una vez completados todos los pasos.
+- No ejecutar `git pull`, `git add`, `git commit` ni push automáticos.
+- Entregar un resumen claro de lo realizado, decisiones tomadas y restricciones pendientes.
+- Asegurar que el contexto de continuidad quede disponible para la siguiente sesión.
 
-# Verificación de build
-npm run build
+## Restricciones de alcance
 
-# Verificación rápida (si hay dev server)
-npm run dev
-```
-
-## Git Workflow
-
-### Antes de empezar
-```bash
-git status
-git pull origin main
-```
-
-### Después de cambios significativos
-```bash
-git add .
-git commit -m "tipo: descripción clara"
-```
-
-## Reglas de engagement
-
-1. **No asumas** - Pregunta si no estás seguro
-2. **Trabaja paso a paso** - No hagas 50 cambios de golpe
-3. **Verifica constantemente** - Ejecuta lint después de cada archivo
-4. **Comunica bloqueos** - Informa inmediatamente si hay problemas
-5. **Confirma al final** - Verifica que el usuario está satisfecho
-
-##enna!
+- No modificar archivos fuera de los acordados.
+- No realizar operaciones de Git mutadoras sin instrucción explícita.
+- No solicitar confirmación por acciones rutinarias dentro del alcance.

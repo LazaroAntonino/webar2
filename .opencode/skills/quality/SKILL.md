@@ -1,66 +1,49 @@
 ---
 name: quality
-description: Mantener calidad del código y evitar errores comunes. Usar antes de ogni commit o cuando se detecten problemas de calidad.
+description: Define la matriz de validación del proyecto y distingue warnings preexistentes de nuevos. Usar antes de entregar cambios o cuando se precise elegir el método de verificación correcto.
 ---
 
-# Quality Skill
+# Quality
 
-## Estándares de Calidad
+Esta skill es la fuente única para decidir qué validación aplica a cada tipo de cambio.
+No prometer cero bugs ni consola limpia sin navegador.
+Distinguir warnings nuevos, preexistentes y de origen no determinado; no atribuirlos sin evidencia.
+Aplicar solo las verificaciones que correspondan al alcance autorizado.
 
-### Código Limpio
-- Sin console.log de debug
-- Sin código comentado sin propósito
-- Sin variables sin usar
-- Funciones con un solo propósito
+## Matriz de validación
 
-### React Best Practices
-- Componentes pequeños y focused
-- Custom hooks para lógica reutilizable
-- Props typed (si se usa TypeScript)
-- Error boundaries para componentes críticos
+| Tipo de cambio | Verificación |
+|---|---|
+| Frontend React/JS | `npm run lint` + `npm run build` + casos de UI relevantes |
+| SSG / SEO | Lint si cambia JS/JSX, `npm run build` + `npm run audit` (no confundir con `npm audit`) |
+| Backend `server/server.js` | `node --check server/server.js` para sintaxis; pruebas aisladas sin escribir en Google real |
+| Scripts/config OpenCode | `node .opencode/scripts/validate.mjs` + `node --test .opencode/tests/config.test.mjs`; contrastar esquema y comprobar carga en una nueva sesión |
+| Documentación | Revisar enlaces y diff; no build rutina |
 
-### Performance
-- Evitar renders innecesarios
-- Usar useMemo/useCallback cuando sea necesario
-- Lazy loading para componentes pesados
-- Optimizar imágenes y assets
+## Reglas generales
 
-### Security
-- No hardcodear secrets
-- Sanitizar inputs del usuario
-- Usar HTTPS para APIs externas
-- Validar datos en cliente y servidor
+- Informar si los warnings son preexistentes o introducidos por los cambios.
+- Los scripts nuevos fuera del lint del proyecto deben comprobarse con `node --check` o tests.
+- Si una validación falla, reportar el error concreto y su alcance antes de proponer corrección.
+- Coordinar con el agente principal las validaciones globales; no repetirlas por cada archivo o subagente.
+- Preferir pruebas aisladas sobre acciones contra servicios reales.
 
-## Checkpoint de Calidad
+## Qué no hacer
 
-Antes de finalizar cualquier tarea, verificar:
+- No usar `npm audit` en lugar de `npm run audit`.
+- No validar el backend solo con `npm run lint` desde la raíz.
+- No asumir que el build limpio garantiza ausencia de bugs de runtime.
+- No reportar warnings preexistentes como si fueran nuevos.
 
-```
-Calidad del código:
-[ ] ¿El código es legible?
-[ ] ¿Los nombres son descriptivos?
-[ ] ¿Hay documentación necesaria?
-[ ] ¿Se siguen las convenciones del proyecto?
+## Reporte de resultados
 
-Funcionalidad:
-[ ] ¿El código hace lo que se espera?
-[ ] ¿Maneja casos edge?
-[ ] ¿Hay feedback para el usuario?
-[ ] ¿Los errores están manejados?
+- Indicar qué comandos se ejecutaron y con qué resultado.
+- Separar errores y warnings nuevos, preexistentes y de origen no determinado.
+- Mencionar si una validación quedó fuera del alcance autorizado.
+- El lint raíz permite hasta cinco warnings y excluye `server/**` y `scripts/**`; no es validación total.
+- El build depende de datos remotos; un fallo de red no demuestra un fallo de código. La auditoría SEO requiere `dist` actualizado.
 
-Técnico:
-[ ] ¿Lint pasa sin errores?
-[ ] ¿Build successful?
-[ ] ¿No hay warnings significativos?
-[ ] ¿Dependencies actualizadas?
-```
+## Scripts fuera de cobertura
 
-## Errores Críticos a Evitar
-
-1. **Memory leaks**: Cleanup en useEffect, cancel subscriptions
-2. **Race conditions**: Cancelar requests anteriores, verificar datos stale
-3. **State inconsistencies**: Updates atómicos, evitar estado contradictorio
-4. **Missing null checks**: Siempre verificar `data && data.items`
-5. **Infinite loops**: Dependencias de useEffect bien definidas
-
-##enna!
+Si un archivo nuevo no está cubierto por `npm run lint`, verificar su sintaxis con `node --check`.
+Si tiene tests, ejecutarlos con `node --test` en el directorio correspondiente.
